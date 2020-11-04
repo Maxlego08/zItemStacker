@@ -3,6 +3,7 @@ package fr.maxlego08.zitemstacker;
 import java.util.UUID;
 
 import org.bukkit.entity.Item;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
@@ -64,9 +65,48 @@ public class ZItem extends ZUtils {
 		return item.getUniqueId();
 	}
 
-	public void delete() {
-		if (isValid())
-			item.remove();
+	public void give(Inventory inventory) {
+
+		ItemStack itemStack = this.item.getItemStack();
+		for (int a = 0; a != 36; a++) {
+
+			ItemStack currentItem = inventory.getItem(a);
+
+			// Si l'item est null alors on peut ajouter 64
+			if (currentItem == null) {
+
+				int newAmount = Math.min(64, this.amount);
+				this.amount -= newAmount;
+
+				ItemStack newItemStack = itemStack.clone();
+				newItemStack.setAmount(newAmount);
+				inventory.setItem(a, newItemStack);
+
+			}
+			// Si l'item est le même
+			else if (itemStack.isSimilar(currentItem) && currentItem.getAmount() < 64) {
+
+				int freeAmount = 64 - currentItem.getAmount();
+				int newAmount = Math.min(freeAmount, this.amount);
+				this.amount -= newAmount;
+
+				ItemStack newItemStack = itemStack.clone();
+				newItemStack.setAmount(newAmount);
+				inventory.setItem(a, newItemStack);
+
+			}
+
+			if (this.amount <= 0)
+				return;
+
+		}
+		
+		this.item.setCustomName("§6" + this.amount + " §e" + getItemName(item.getItemStack()));
+
+	}
+
+	public void remove() {
+		this.item.remove();
 	}
 
 }

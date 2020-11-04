@@ -11,12 +11,16 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
 
+@SuppressWarnings("deprecation")
 public class ZItemManager extends ListenerAdapter {
 
 	private final Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
@@ -26,6 +30,32 @@ public class ZItemManager extends ListenerAdapter {
 		return Optional.ofNullable(items.get(item.getUniqueId()));
 	}
 
+	@Override
+	public void onPickUp(PlayerPickupItemEvent event, Player player) {
+		
+		Item target = event.getItem();
+		Optional<ZItem> optional = getItem(target);
+		
+		if (optional.isPresent()) {
+			
+			event.setCancelled(true);
+			
+			ZItem item = optional.get();
+			Inventory inventory = player.getInventory();
+			item.give(inventory);
+			
+			if (item.getAmount() <= 0) {
+				
+				items.remove(item.getUniqueId());
+				item.remove();
+				
+			}
+			
+		}
+		
+		
+	}
+	
 	@Override
 	public void onItemMerge(ItemMergeEvent event, Item entity, Item target) {
 
@@ -44,7 +74,7 @@ public class ZItemManager extends ListenerAdapter {
 					ZItem zItem = optional2.get();
 					item.add(zItem.getAmount());
 					items.remove(zItem.getUniqueId());
-					zItem.delete();
+					zItem.remove();
 					
 				} else
 					
@@ -54,9 +84,7 @@ public class ZItemManager extends ListenerAdapter {
 				entity.remove();
 
 			}
-
 		}
-
 	}
 
 	@Override
