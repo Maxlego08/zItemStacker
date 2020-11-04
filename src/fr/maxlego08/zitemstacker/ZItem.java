@@ -3,6 +3,7 @@ package fr.maxlego08.zitemstacker;
 import java.util.UUID;
 
 import org.bukkit.entity.Item;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -67,15 +68,16 @@ public class ZItem extends ZUtils {
 
 	public void give(Inventory inventory) {
 
+		int inventorySize = inventory.getType().equals(InventoryType.HOPPER) ? 5 : 36;
 		ItemStack itemStack = this.item.getItemStack();
-		for (int a = 0; a != 36; a++) {
+		for (int a = 0; a != inventorySize; a++) {
 
 			ItemStack currentItem = inventory.getItem(a);
 
 			// Si l'item est null alors on peut ajouter 64
 			if (currentItem == null) {
 
-				int newAmount = Math.min(64, this.amount);
+				int newAmount = Math.min(itemStack.getMaxStackSize(), this.amount);
 				this.amount -= newAmount;
 
 				ItemStack newItemStack = itemStack.clone();
@@ -84,9 +86,9 @@ public class ZItem extends ZUtils {
 
 			}
 			// Si l'item est le même
-			else if (itemStack.isSimilar(currentItem) && currentItem.getAmount() < 64) {
+			else if (itemStack.isSimilar(currentItem) && currentItem.getAmount() < currentItem.getMaxStackSize()) {
 
-				int freeAmount = 64 - currentItem.getAmount();
+				int freeAmount = currentItem.getMaxStackSize() - currentItem.getAmount();
 				int newAmount = Math.min(freeAmount, this.amount);
 				this.amount -= newAmount;
 

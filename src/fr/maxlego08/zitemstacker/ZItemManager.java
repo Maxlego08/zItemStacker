@@ -14,6 +14,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -31,31 +32,46 @@ public class ZItemManager extends ListenerAdapter {
 	}
 
 	@Override
+	public void onInventoryPickUp(InventoryPickupItemEvent event, Inventory inventory, Item target) {
+
+		Optional<ZItem> optional = getItem(target);
+
+		if (optional.isPresent()) {
+
+			event.setCancelled(true);
+
+			ZItem item = optional.get();
+			item.give(inventory);
+
+			if (item.getAmount() <= 0) {
+				items.remove(item.getUniqueId());
+				item.remove();
+			}
+
+		}
+	}
+
+	@Override
 	public void onPickUp(PlayerPickupItemEvent event, Player player) {
-		
+
 		Item target = event.getItem();
 		Optional<ZItem> optional = getItem(target);
-		
+
 		if (optional.isPresent()) {
-			
+
 			event.setCancelled(true);
-			
+
 			ZItem item = optional.get();
 			Inventory inventory = player.getInventory();
 			item.give(inventory);
-			
+
 			if (item.getAmount() <= 0) {
-				
 				items.remove(item.getUniqueId());
 				item.remove();
-				
 			}
-			
 		}
-		
-		
 	}
-	
+
 	@Override
 	public void onItemMerge(ItemMergeEvent event, Item entity, Item target) {
 
@@ -70,14 +86,14 @@ public class ZItemManager extends ListenerAdapter {
 			if (item.isSimilar(itemStack)) {
 
 				if (optional2.isPresent()) {
-					
+
 					ZItem zItem = optional2.get();
 					item.add(zItem.getAmount());
 					items.remove(zItem.getUniqueId());
 					zItem.remove();
-					
+
 				} else
-					
+
 					item.add(itemStack.getAmount());
 
 				event.setCancelled(true);

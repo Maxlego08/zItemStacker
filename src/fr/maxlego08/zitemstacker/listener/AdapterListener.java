@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -70,5 +71,10 @@ public class AdapterListener extends ZUtils implements Listener {
 	@EventHandler
 	public void onPick(PlayerPickupItemEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onPickUp(event, event.getPlayer()));
+	}
+
+	@EventHandler
+	public void onInventoryPickUp(InventoryPickupItemEvent event) {
+		template.getListenerAdapters().forEach(adapter -> adapter.onInventoryPickUp(event, event.getInventory(), event.getItem()));
 	}
 }

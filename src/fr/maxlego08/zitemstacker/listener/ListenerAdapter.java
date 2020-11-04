@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -28,6 +29,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 
 import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
 
@@ -110,5 +112,8 @@ public abstract class ListenerAdapter extends ZUtils{
 	}
 
 	public void onItemMerge(ItemMergeEvent event, Item entity, Item item) {
+	}
+
+	public void onInventoryPickUp(InventoryPickupItemEvent event, Inventory inventory, Item item) {
 	}
 }
