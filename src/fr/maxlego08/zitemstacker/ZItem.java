@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
 
 public class ZItem extends ZUtils {
@@ -29,8 +30,8 @@ public class ZItem extends ZUtils {
 		this.amount = item.getItemStack().getAmount();
 		this.item.getItemStack().setAmount(1);
 
-		item.setCustomName("§6" + amount + " §e" + getItemName(item.getItemStack()));
 		item.setCustomNameVisible(true);
+		setItemName();
 	}
 
 	public boolean isValid() {
@@ -73,7 +74,12 @@ public class ZItem extends ZUtils {
 
 	public void add(int amount) {
 		this.amount += amount;
-		this.getItem().setCustomName("§6" + this.amount + " §e" + getItemName(getItem().getItemStack()));
+		setItemName();
+	}
+	
+	public void remove(int amount) {
+		this.amount -= amount;
+		setItemName();
 	}
 
 	public boolean isSimilar(ItemStack itemStack) {
@@ -108,11 +114,10 @@ public class ZItem extends ZUtils {
 
 				int freeAmount = currentItem.getMaxStackSize() - currentItem.getAmount();
 				int newAmount = Math.min(freeAmount, this.amount);
+
 				this.amount -= newAmount;
 
-				ItemStack newItemStack = itemStack.clone();
-				newItemStack.setAmount(newAmount);
-				inventory.setItem(a, newItemStack);
+				currentItem.setAmount(currentItem.getAmount() + newAmount);
 
 			}
 
@@ -121,8 +126,14 @@ public class ZItem extends ZUtils {
 
 		}
 
-		this.getItem().setCustomName("§6" + this.amount + " §e" + getItemName(getItem().getItemStack()));
+		setItemName();
+	}
 
+	public void setItemName() {
+		String name = Config.itemName;
+		name = name.replace("%amount%", String.valueOf(this.amount));
+		name = name.replace("%item%", getItemName(getItem().getItemStack()));
+		this.getItem().setCustomName(name);
 	}
 
 	public void remove() {

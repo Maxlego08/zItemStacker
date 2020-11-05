@@ -2,12 +2,10 @@ package fr.maxlego08.zitemstacker;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -23,6 +21,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
+import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Persist;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 
@@ -30,7 +29,6 @@ import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 public class ZItemManager extends ListenerAdapter implements Saveable {
 
 	private static Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
-	private final double distance = 8.0;
 
 	private Optional<ZItem> getItem(Item item) {
 		return Optional.ofNullable(items.get(item.getUniqueId()));
@@ -39,6 +37,9 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 	@Override
 	public void onInventoryPickUp(InventoryPickupItemEvent event, Inventory inventory, Item target) {
 
+		if (event.isCancelled())
+			return;
+
 		Optional<ZItem> optional = getItem(target);
 
 		if (optional.isPresent()) {
@@ -46,6 +47,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 			event.setCancelled(true);
 
 			ZItem item = optional.get();
+
 			item.give(inventory);
 
 			if (item.getAmount() <= 0) {
@@ -58,11 +60,25 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 
 	@Override
 	public void onDeSpawn(ItemDespawnEvent event, Item entity, Location location) {
-		items.remove(entity.getUniqueId());
+		if (event.isCancelled())
+			return;
+		
+		Optional<ZItem> optional = getItem(entity);
+		if (optional.isPresent()) {
+			
+			if (Config.disableItemDespawn)
+				event.setCancelled(true);
+			else
+				items.remove(entity.getUniqueId());
+			
+		}
 	}
 
 	@Override
 	public void onPickUp(PlayerPickupItemEvent event, Player player) {
+
+		if (event.isCancelled())
+			return;
 
 		Item target = event.getItem();
 		Optional<ZItem> optional = getItem(target);
@@ -84,6 +100,9 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 
 	@Override
 	public void onItemMerge(ItemMergeEvent event, Item entity, Item target) {
+
+		if (event.isCancelled())
+			return;
 
 		ItemStack itemStack = entity.getItemStack();
 		Optional<ZItem> optional = getItem(target);
@@ -116,6 +135,9 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 	@Override
 	public void onItemSpawn(ItemSpawnEvent event, Item entity, Location location) {
 
+		if (event.isCancelled())
+			return;
+
 		ItemStack itemStack = entity.getItemStack();
 		Optional<ZItem> optional = getNearbyItems(location, itemStack);
 		if (optional.isPresent()) {
@@ -145,10 +167,12 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 	 */
 	private Optional<ZItem> getNearbyItems(Location location, ItemStack itemStack) {
 		World world = location.getWorld();
-		List<Entity> entities = world.getNearbyEntities(location, distance, distance, distance).stream()
+		Optional<Entity> optional = world
+				.getNearbyEntities(location, Config.distanceOnDrop, Config.distanceOnDrop, Config.distanceOnDrop)
+				.parallelStream()
 				.filter(entity -> entity instanceof Item && ((Item) entity).getItemStack().isSimilar(itemStack))
-				.collect(Collectors.toList());
-		return entities.size() == 0 ? Optional.empty() : getItem((Item) entities.get(0));
+				.findFirst();
+		return !optional.isPresent() ? Optional.empty() : getItem((Item) optional.get());
 	}
 
 	@Override

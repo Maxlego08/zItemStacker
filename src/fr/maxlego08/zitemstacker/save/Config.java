@@ -5,6 +5,10 @@ import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 
 public class Config implements Saveable {
 
+	public static double distanceOnDrop = 8.0;
+	public static boolean disableItemDespawn = true;
+	public static String itemName = "§bx%amount% §3%item%";
+	
 	/**
 	 * static Singleton instance.
 	 */
