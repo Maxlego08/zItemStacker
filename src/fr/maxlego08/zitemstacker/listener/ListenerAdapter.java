@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -115,5 +116,8 @@ public abstract class ListenerAdapter extends ZUtils{
 	}
 
 	public void onInventoryPickUp(InventoryPickupItemEvent event, Inventory inventory, Item item) {
+	}
+
+	public void onDeSpawn(ItemDespawnEvent event, Item entity, Location location) {
 	}
 }

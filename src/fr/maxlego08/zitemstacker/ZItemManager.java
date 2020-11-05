@@ -1,8 +1,10 @@
 package fr.maxlego08.zitemstacker;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
@@ -20,11 +23,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
+import fr.maxlego08.zitemstacker.zcore.utils.storage.Persist;
+import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 
 @SuppressWarnings("deprecation")
-public class ZItemManager extends ListenerAdapter {
+public class ZItemManager extends ListenerAdapter implements Saveable {
 
-	private final Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
+	private static Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
 	private final double distance = 8.0;
 
 	private Optional<ZItem> getItem(Item item) {
@@ -49,6 +54,11 @@ public class ZItemManager extends ListenerAdapter {
 			}
 
 		}
+	}
+
+	@Override
+	public void onDeSpawn(ItemDespawnEvent event, Item entity, Location location) {
+		items.remove(entity.getUniqueId());
 	}
 
 	@Override
@@ -139,6 +149,31 @@ public class ZItemManager extends ListenerAdapter {
 				.filter(entity -> entity instanceof Item && ((Item) entity).getItemStack().isSimilar(itemStack))
 				.collect(Collectors.toList());
 		return entities.size() == 0 ? Optional.empty() : getItem((Item) entities.get(0));
+	}
+
+	@Override
+	public void save(Persist persist) {
+		Iterator<Entry<UUID, ZItem>> iterator = items.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<UUID, ZItem> entry = iterator.next();
+			ZItem item = entry.getValue();
+			if (!item.isValid())
+				iterator.remove();
+		}
+		persist.save(this, "items");
+	}
+
+	@Override
+	public void load(Persist persist) {
+		persist.loadOrSaveDefault(this, ZItemManager.class, "items");
+		Iterator<Entry<UUID, ZItem>> iterator = items.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<UUID, ZItem> entry = iterator.next();
+			ZItem item = entry.getValue();
+			if (!item.isValid()) {
+				iterator.remove();
+			}
+		}
 	}
 
 }

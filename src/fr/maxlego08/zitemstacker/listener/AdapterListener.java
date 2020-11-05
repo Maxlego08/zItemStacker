@@ -3,6 +3,7 @@ package fr.maxlego08.zitemstacker.listener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -76,5 +77,10 @@ public class AdapterListener extends ZUtils implements Listener {
 	@EventHandler
 	public void onInventoryPickUp(InventoryPickupItemEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onInventoryPickUp(event, event.getInventory(), event.getItem()));
+	}
+	
+	@EventHandler
+	public void onDeSpawn(ItemDespawnEvent event) {
+		template.getListenerAdapters().forEach(adapter -> adapter.onDeSpawn(event, event.getEntity(), event.getLocation()));
 	}
 }

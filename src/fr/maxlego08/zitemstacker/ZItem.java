@@ -2,6 +2,10 @@ package fr.maxlego08.zitemstacker;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -11,7 +15,8 @@ import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
 
 public class ZItem extends ZUtils {
 
-	private final Item item;
+	private transient Item item;
+	private final UUID uuid;
 	private int amount;
 
 	/**
@@ -20,6 +25,7 @@ public class ZItem extends ZUtils {
 	public ZItem(Item item) {
 		super();
 		this.item = item;
+		this.uuid = item.getUniqueId();
 		this.amount = item.getItemStack().getAmount();
 		this.item.getItemStack().setAmount(1);
 
@@ -28,6 +34,8 @@ public class ZItem extends ZUtils {
 	}
 
 	public boolean isValid() {
+		if (item == null)
+			getItem();
 		return item != null && item.isValid();
 	}
 
@@ -35,7 +43,17 @@ public class ZItem extends ZUtils {
 	 * @return the item
 	 */
 	public Item getItem() {
-		return item;
+		return item == null ? item = create() : item;
+	}
+
+	private Item create() {
+		for (World world : Bukkit.getWorlds()) {
+			Entity entity = world.getEntities().stream().filter(e -> {
+				return e.getType().equals(EntityType.DROPPED_ITEM) && e.getUniqueId().equals(uuid);
+			}).findFirst().orElse(null);
+			return (Item) entity;
+		}
+		return null;
 	}
 
 	/**
@@ -55,21 +73,21 @@ public class ZItem extends ZUtils {
 
 	public void add(int amount) {
 		this.amount += amount;
-		this.item.setCustomName("§6" + this.amount + " §e" + getItemName(item.getItemStack()));
+		this.getItem().setCustomName("§6" + this.amount + " §e" + getItemName(getItem().getItemStack()));
 	}
 
 	public boolean isSimilar(ItemStack itemStack) {
-		return itemStack != null && isValid() && this.item.getItemStack().isSimilar(itemStack);
+		return itemStack != null && isValid() && this.getItem().getItemStack().isSimilar(itemStack);
 	}
 
 	public UUID getUniqueId() {
-		return item.getUniqueId();
+		return uuid;
 	}
 
 	public void give(Inventory inventory) {
 
 		int inventorySize = inventory.getType().equals(InventoryType.HOPPER) ? 5 : 36;
-		ItemStack itemStack = this.item.getItemStack();
+		ItemStack itemStack = this.getItem().getItemStack();
 		for (int a = 0; a != inventorySize; a++) {
 
 			ItemStack currentItem = inventory.getItem(a);
@@ -102,13 +120,13 @@ public class ZItem extends ZUtils {
 				return;
 
 		}
-		
-		this.item.setCustomName("§6" + this.amount + " §e" + getItemName(item.getItemStack()));
+
+		this.getItem().setCustomName("§6" + this.amount + " §e" + getItemName(getItem().getItemStack()));
 
 	}
 
 	public void remove() {
-		this.item.remove();
+		this.getItem().remove();
 	}
 
 }
