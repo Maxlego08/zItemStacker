@@ -5,6 +5,7 @@ import fr.maxlego08.zitemstacker.inventory.InventoryManager;
 import fr.maxlego08.zitemstacker.listener.AdapterListener;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
+import fr.maxlego08.zitemstacker.zcore.utils.plugins.MetricsLite;
 
 /**
  * System to create your plugins very simply Projet:
@@ -36,10 +37,11 @@ public class ZItemPlugin extends ZPlugin {
 
 		/* Add Saver */
 		addSave(Config.getInstance());
-		// addSave(new CooldownBuilder());
 
 		getSavers().forEach(saver -> saver.load(getPersist()));
 
+		new MetricsLite(this, 9330);
+		
 		postEnable();
 	}
 
