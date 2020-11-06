@@ -1,6 +1,7 @@
 package fr.maxlego08.zitemstacker.zcore.enums;
 
 public enum Permission {
+	ZITEMSACKER_RELOAD, ZITEMSACKER_USE
 
 	;
 

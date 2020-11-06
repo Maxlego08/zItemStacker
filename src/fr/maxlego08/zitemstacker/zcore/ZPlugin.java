@@ -17,10 +17,7 @@ import com.google.gson.GsonBuilder;
 
 import fr.maxlego08.zitemstacker.command.CommandManager;
 import fr.maxlego08.zitemstacker.command.VCommand;
-import fr.maxlego08.zitemstacker.inventory.InventoryManager;
-import fr.maxlego08.zitemstacker.inventory.VInventory;
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
-import fr.maxlego08.zitemstacker.zcore.enums.EnumInventory;
 import fr.maxlego08.zitemstacker.zcore.logger.Logger;
 import fr.maxlego08.zitemstacker.zcore.logger.Logger.LogType;
 import fr.maxlego08.zitemstacker.zcore.utils.gson.LocationAdapter;
@@ -42,7 +39,6 @@ public abstract class ZPlugin extends JavaPlugin {
 	private Economy economy = null;
 
 	protected CommandManager commandManager;
-	protected InventoryManager inventoryManager;
 
 	public ZPlugin() {
 		plugin = this;
@@ -68,9 +64,6 @@ public abstract class ZPlugin extends JavaPlugin {
 	}
 
 	protected void postEnable() {
-
-		if (inventoryManager != null)
-			inventoryManager.sendLog();
 
 		if (commandManager != null)
 			commandManager.registerCommands();
@@ -204,13 +197,6 @@ public abstract class ZPlugin extends JavaPlugin {
 	}
 
 	/**
-	 * @return the inventoryManager
-	 */
-	public InventoryManager getInventoryManager() {
-		return inventoryManager;
-	}
-
-	/**
 	 * 
 	 * @param pluginName
 	 * @return
@@ -238,16 +224,6 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
 		commandManager.registerCommand(command, vCommand, aliases);
-	}
-
-	/**
-	 * Register Inventory
-	 * 
-	 * @param inventory
-	 * @param vInventory
-	 */
-	protected void registerInventory(EnumInventory inventory, VInventory vInventory) {
-		inventoryManager.addInventory(inventory, vInventory);
 	}
 
 }

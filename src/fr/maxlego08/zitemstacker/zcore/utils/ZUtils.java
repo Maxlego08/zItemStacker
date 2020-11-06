@@ -15,13 +15,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,8 +45,6 @@ import com.mojang.authlib.properties.Property;
 
 import fr.maxlego08.zitemstacker.ZItemPlugin;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
-import fr.maxlego08.zitemstacker.zcore.enums.EnumInventory;
-import fr.maxlego08.zitemstacker.zcore.enums.Message;
 import fr.maxlego08.zitemstacker.zcore.enums.Permission;
 import fr.maxlego08.zitemstacker.zcore.utils.builder.CooldownBuilder;
 import fr.maxlego08.zitemstacker.zcore.utils.builder.TimerBuilder;
@@ -66,7 +59,6 @@ import net.milkbowl.vault.economy.Economy;
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
 
-	private static transient List<String> teleportPlayers = new ArrayList<String>();
 	protected transient ZItemPlugin plugin = (ZItemPlugin) ZPlugin.z();
 
 	/**
@@ -216,70 +208,6 @@ public abstract class ZUtils extends MessageUtils {
 	protected boolean same(Location l, Location l2) {
 		return (l.getBlockX() == l2.getBlockX()) && (l.getBlockY() == l2.getBlockY())
 				&& (l.getBlockZ() == l2.getBlockZ()) && l.getWorld().getName().equals(l2.getWorld().getName());
-	}
-
-	/**
-	 * Teleport a player to a given location with a given delay
-	 * 
-	 * @param player
-	 *            who will be teleported
-	 * @param delay
-	 *            before the teleportation of the player
-	 * @param location
-	 *            where the player will be teleported
-	 */
-	protected void teleport(Player player, int delay, Location location) {
-		teleport(player, delay, location, null);
-	}
-
-	/**
-	 * Teleport a player to a given location with a given delay
-	 * 
-	 * @param player
-	 *            who will be teleported
-	 * @param delay
-	 *            before the teleportation of the player
-	 * @param location
-	 *            where the player will be teleported
-	 * @param code
-	 *            executed when the player is teleported or not
-	 */
-	protected void teleport(Player player, int delay, Location location, Consumer<Boolean> cmd) {
-		if (teleportPlayers.contains(player.getName())) {
-			message(player, Message.TELEPORT_ERROR);
-			return;
-		}
-		ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-		Location playerLocation = player.getLocation();
-		AtomicInteger verif = new AtomicInteger(delay);
-		teleportPlayers.add(player.getName());
-		if (!location.getChunk().isLoaded())
-			location.getChunk().load();
-		ses.scheduleWithFixedDelay(() -> {
-			if (!same(playerLocation, player.getLocation())) {
-				message(player, Message.TELEPORT_MOVE);
-				ses.shutdown();
-				teleportPlayers.remove(player.getName());
-				if (cmd != null)
-					cmd.accept(false);
-				return;
-			}
-			int currentSecond = verif.getAndDecrement();
-			if (!player.isOnline()) {
-				ses.shutdown();
-				teleportPlayers.remove(player.getName());
-				return;
-			}
-			if (currentSecond == 0) {
-				ses.shutdown();
-				teleportPlayers.remove(player.getName());
-				player.teleport(location);
-				message(player, Message.TELEPORT_SUCCESS);
-				if (cmd != null)
-					cmd.accept(true);
-			} else
-				message(player, Message.TELEPORT_MESSAGE, currentSecond);
-		}, 0, 1, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -596,48 +524,6 @@ public abstract class ZUtils extends MessageUtils {
 
 			}
 		}, 0, delay);
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param inventoryId
-	 */
-	protected void createInventory(Player player, EnumInventory inventory) {
-		createInventory(player, inventory, 1);
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param inventoryId
-	 * @param page
-	 */
-	protected void createInventory(Player player, EnumInventory inventory, int page) {
-		createInventory(player, inventory, page, new Object() {
-		});
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param inventoryId
-	 * @param page
-	 * @param objects
-	 */
-	protected void createInventory(Player player, EnumInventory inventory, int page, Object... objects) {
-		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
-	}
-
-	/**
-	 * 
-	 * @param player
-	 * @param inventory
-	 * @param page
-	 * @param objects
-	 */
-	protected void createInventory(Player player, int inventory, int page, Object... objects) {
-		plugin.getInventoryManager().createInventory(inventory, player, page, objects);
 	}
 
 	/**
