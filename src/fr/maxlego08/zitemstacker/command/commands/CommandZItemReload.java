@@ -23,6 +23,7 @@ public class CommandZItemReload extends VCommand {
 
 		Config.getInstance().load(plugin.getPersist());
 		Lang.getInstance().load(plugin.getPersist());
+		plugin.getItemManager().loadConfiguration();
 		
 		message(sender, Message.COMMAND_RELOAD);
 		

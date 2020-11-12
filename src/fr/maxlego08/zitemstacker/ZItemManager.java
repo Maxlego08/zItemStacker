@@ -1,14 +1,22 @@
 package fr.maxlego08.zitemstacker;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -19,9 +27,12 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
 import fr.maxlego08.zitemstacker.save.Config;
+import fr.maxlego08.zitemstacker.zcore.utils.loader.ItemStackLoader;
+import fr.maxlego08.zitemstacker.zcore.utils.loader.Loader;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Persist;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 
@@ -29,6 +40,12 @@ import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 public class ZItemManager extends ListenerAdapter implements Saveable {
 
 	private static Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
+	private transient List<ItemStack> whitelistItems = new ArrayList<ItemStack>();
+	private transient boolean enableWhitelist = false;
+
+	public ZItemManager(JavaPlugin plugin) {
+		super(plugin);
+	}
 
 	private Optional<ZItem> getItem(Item item) {
 		return Optional.ofNullable(items.get(item.getUniqueId()));
@@ -62,15 +79,15 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 	public void onDeSpawn(ItemDespawnEvent event, Item entity, Location location) {
 		if (event.isCancelled())
 			return;
-		
+
 		Optional<ZItem> optional = getItem(entity);
 		if (optional.isPresent()) {
-			
+
 			if (Config.disableItemDespawn)
 				event.setCancelled(true);
 			else
 				items.remove(entity.getUniqueId());
-			
+
 		}
 	}
 
@@ -105,6 +122,10 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 			return;
 
 		ItemStack itemStack = entity.getItemStack();
+		
+		if (isEnable() && !isWhitelist(itemStack))
+			return;
+		
 		Optional<ZItem> optional = getItem(target);
 		Optional<ZItem> optional2 = getItem(entity);
 
@@ -138,7 +159,12 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 		if (event.isCancelled())
 			return;
 
+		
 		ItemStack itemStack = entity.getItemStack();
+		
+		if (isEnable() && !isWhitelist(itemStack))
+			return;
+		
 		Optional<ZItem> optional = getNearbyItems(location, itemStack);
 		if (optional.isPresent()) {
 
@@ -157,6 +183,20 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 
 		}
 
+	}
+
+	/**
+	 * 
+	 * @param itemStack
+	 * @return true if item is whitelist
+	 */
+	private boolean isWhitelist(ItemStack itemStack) {
+		return itemStack != null 
+				&& this.whitelistItems.stream().filter(item -> item.isSimilar(itemStack)).findFirst().isPresent();
+	}
+
+	private boolean isEnable() {
+		return this.enableWhitelist;
 	}
 
 	/**
@@ -185,6 +225,16 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 				iterator.remove();
 		}
 		persist.save(this, "items");
+
+		File file = new File(plugin.getDataFolder(), "whitelist.yml");
+		if (!file.exists()) {
+			try {
+				createDefaultFile(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
 	}
 
 	@Override
@@ -198,6 +248,55 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 				iterator.remove();
 			}
 		}
+
+		// Whitelist system
+		this.loadConfiguration();
+	}
+
+	public void loadConfiguration(){
+		File file = new File(plugin.getDataFolder(), "whitelist.yml");
+		if (!file.exists()) {
+			try {
+				createDefaultFile(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		YamlConfiguration configuration = getConfig(file);
+		enableWhitelist = configuration.getBoolean("enableWhitelist", false);
+		ConfigurationSection configurationSection = configuration.getConfigurationSection("whitelist.");
+		Loader<ItemStack> loader = new ItemStackLoader();
+
+		this.whitelistItems = new ArrayList<>();
+
+		for (String key : configurationSection.getKeys(false)) {
+
+			String path = "whitelist." + key + ".";
+
+			ItemStack itemStack = loader.load(configuration, path);
+			whitelistItems.add(itemStack);
+
+		}
+	}
+	
+	private void createDefaultFile(File file) throws IOException {
+
+		file.createNewFile();
+		YamlConfiguration configuration = getConfig(file);
+		configuration.set("enableWhitelist", enableWhitelist);
+
+		List<ItemStack> itemStacks = new ArrayList<>();
+		itemStacks.add(new ItemStack(Material.MELON));
+		itemStacks.add(new ItemStack(Material.CACTUS));
+
+		Loader<ItemStack> loader = new ItemStackLoader();
+		AtomicInteger atomicInteger = new AtomicInteger(1);
+		itemStacks.forEach(itemStack -> {
+			loader.save(itemStack, configuration, "whitelist." + atomicInteger.getAndIncrement() + ".");
+		});
+
+		configuration.save(file);
+
 	}
 
 }

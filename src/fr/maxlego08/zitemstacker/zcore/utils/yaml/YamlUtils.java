@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import fr.maxlego08.zitemstacker.zcore.logger.Logger;
 import fr.maxlego08.zitemstacker.zcore.logger.Logger.LogType;
@@ -12,12 +12,12 @@ import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
 
 public abstract class YamlUtils extends ZUtils {
 
-	protected final JavaPlugin plugin;
+	protected transient final Plugin plugin;
 
 	/**
 	 * @param plugin
 	 */
-	public YamlUtils(JavaPlugin plugin) {
+	public YamlUtils(Plugin plugin) {
 		super();
 		this.plugin = plugin;
 	}

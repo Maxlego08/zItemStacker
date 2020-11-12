@@ -33,7 +33,7 @@ public class ZItemPlugin extends ZPlugin {
 		/* Add Listener */
 
 		addListener(new AdapterListener(this));
-		addListener(itemManager = new ZItemManager());
+		addListener(itemManager = new ZItemManager(this));
 
 		/* Add Saver */
 		addSave(Config.getInstance());

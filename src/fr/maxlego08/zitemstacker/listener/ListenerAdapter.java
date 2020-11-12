@@ -11,11 +11,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -31,11 +31,16 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.Plugin;
 
-import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
+import fr.maxlego08.zitemstacker.zcore.utils.yaml.YamlUtils;
 
 @SuppressWarnings("deprecation")
-public abstract class ListenerAdapter extends ZUtils{
+public abstract class ListenerAdapter extends YamlUtils{
+
+	public ListenerAdapter(Plugin plugin) {
+		super(plugin);
+	}
 
 	protected void onConnect(PlayerJoinEvent event, Player player) {
 	}

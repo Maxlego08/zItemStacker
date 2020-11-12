@@ -25,7 +25,7 @@ public class VersionChecker extends ListenerAdapter {
 	 * @param useLastVersion
 	 */
 	public VersionChecker(Plugin plugin) {
-		super();
+		super(plugin);
 		this.plugin = plugin;
 	}
 
