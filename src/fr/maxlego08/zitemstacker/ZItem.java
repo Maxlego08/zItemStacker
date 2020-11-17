@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
 
-public class ZItem extends ZUtils {
+public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 
 	private transient Item item;
 	private final UUID uuid;
@@ -70,6 +70,7 @@ public class ZItem extends ZUtils {
 	 */
 	public void setAmount(int amount) {
 		this.amount = amount;
+		setItemName();
 	}
 
 	public void add(int amount) {
@@ -138,6 +139,11 @@ public class ZItem extends ZUtils {
 
 	public void remove() {
 		this.getItem().remove();
+	}
+
+	@Override
+	public Item toBukkitEntity() {
+		return this.getItem();
 	}
 
 }

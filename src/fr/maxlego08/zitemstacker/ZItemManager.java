@@ -29,6 +29,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.maxlego08.zitemstacker.api.ItemManager;
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.utils.loader.ItemStackLoader;
@@ -37,7 +38,7 @@ import fr.maxlego08.zitemstacker.zcore.utils.storage.Persist;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 
 @SuppressWarnings("deprecation")
-public class ZItemManager extends ListenerAdapter implements Saveable {
+public class ZItemManager extends ListenerAdapter implements Saveable, ItemManager {
 
 	private static Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
 	private transient List<ItemStack> whitelistItems = new ArrayList<ItemStack>();
@@ -47,7 +48,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 		super(plugin);
 	}
 
-	private Optional<ZItem> getItem(Item item) {
+	private Optional<ZItem> getZItem(Item item) {
 		return Optional.ofNullable(items.get(item.getUniqueId()));
 	}
 
@@ -57,7 +58,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 		if (event.isCancelled())
 			return;
 
-		Optional<ZItem> optional = getItem(target);
+		Optional<ZItem> optional = getZItem(target);
 
 		if (optional.isPresent()) {
 
@@ -77,10 +78,11 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 
 	@Override
 	public void onDeSpawn(ItemDespawnEvent event, Item entity, Location location) {
+
 		if (event.isCancelled())
 			return;
 
-		Optional<ZItem> optional = getItem(entity);
+		Optional<ZItem> optional = getZItem(entity);
 		if (optional.isPresent()) {
 
 			if (Config.disableItemDespawn)
@@ -94,15 +96,17 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 	@Override
 	public void onPickUp(PlayerPickupItemEvent event, Player player) {
 
+		Item target = event.getItem();
+
 		if (event.isCancelled())
 			return;
 
-		Item target = event.getItem();
-		Optional<ZItem> optional = getItem(target);
+		Optional<ZItem> optional = getZItem(target);
 
 		if (optional.isPresent()) {
 
 			event.setCancelled(true);
+			target.remove();
 
 			ZItem item = optional.get();
 			Inventory inventory = player.getInventory();
@@ -122,12 +126,12 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 			return;
 
 		ItemStack itemStack = entity.getItemStack();
-		
+
 		if (isEnable() && !isWhitelist(itemStack))
 			return;
-		
-		Optional<ZItem> optional = getItem(target);
-		Optional<ZItem> optional2 = getItem(entity);
+
+		Optional<ZItem> optional = getZItem(target);
+		Optional<ZItem> optional2 = getZItem(entity);
 
 		if (optional.isPresent()) {
 
@@ -159,12 +163,11 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 		if (event.isCancelled())
 			return;
 
-		
 		ItemStack itemStack = entity.getItemStack();
-		
+
 		if (isEnable() && !isWhitelist(itemStack))
 			return;
-		
+
 		Optional<ZItem> optional = getNearbyItems(location, itemStack);
 		if (optional.isPresent()) {
 
@@ -191,7 +194,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 	 * @return true if item is whitelist
 	 */
 	private boolean isWhitelist(ItemStack itemStack) {
-		return itemStack != null 
+		return itemStack != null
 				&& this.whitelistItems.stream().filter(item -> item.isSimilar(itemStack)).findFirst().isPresent();
 	}
 
@@ -212,7 +215,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 				.parallelStream()
 				.filter(entity -> entity instanceof Item && ((Item) entity).getItemStack().isSimilar(itemStack))
 				.findFirst();
-		return !optional.isPresent() ? Optional.empty() : getItem((Item) optional.get());
+		return !optional.isPresent() ? Optional.empty() : getZItem((Item) optional.get());
 	}
 
 	@Override
@@ -253,7 +256,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 		this.loadConfiguration();
 	}
 
-	public void loadConfiguration(){
+	public void loadConfiguration() {
 		File file = new File(plugin.getDataFolder(), "whitelist.yml");
 		if (!file.exists()) {
 			try {
@@ -278,7 +281,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 
 		}
 	}
-	
+
 	private void createDefaultFile(File file) throws IOException {
 
 		file.createNewFile();
@@ -297,6 +300,32 @@ public class ZItemManager extends ListenerAdapter implements Saveable {
 
 		configuration.save(file);
 
+	}
+
+	@Override
+	public Optional<fr.maxlego08.zitemstacker.api.Item> getItem(UUID uuid) {
+		return Optional.ofNullable(items.get(uuid));
+	}
+
+	@Override
+	public Optional<fr.maxlego08.zitemstacker.api.Item> getItem(Item item) {
+		return this.getItem(item.getUniqueId());
+	}
+
+	@Override
+	public int getItemAmount(Item item) {
+		Optional<fr.maxlego08.zitemstacker.api.Item> optional = getItem(item);
+		return optional.isPresent() ? optional.get().getAmount() : item.getItemStack().getAmount();
+	}
+
+	@Override
+	public void setAmount(Item item, int amount) {
+		Optional<fr.maxlego08.zitemstacker.api.Item> optional = getItem(item);
+		if (optional.isPresent()) {
+			fr.maxlego08.zitemstacker.api.Item zItem = optional.get();
+			zItem.setAmount(amount);
+		} else
+			item.getItemStack().setAmount(amount);
 	}
 
 }

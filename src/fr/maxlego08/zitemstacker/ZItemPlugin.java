@@ -1,5 +1,8 @@
 package fr.maxlego08.zitemstacker;
 
+import org.bukkit.plugin.ServicePriority;
+
+import fr.maxlego08.zitemstacker.api.ItemManager;
 import fr.maxlego08.zitemstacker.command.CommandManager;
 import fr.maxlego08.zitemstacker.command.commands.CommandZItem;
 import fr.maxlego08.zitemstacker.listener.AdapterListener;
@@ -42,6 +45,9 @@ public class ZItemPlugin extends ZPlugin {
 		getSavers().forEach(saver -> saver.load(getPersist()));
 
 		new MetricsLite(this, 9330);
+		
+		//Register provider
+		getServer().getServicesManager().register(ItemManager.class, itemManager, this, ServicePriority.Highest);
 		
 		postEnable();
 	}
