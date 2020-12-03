@@ -1,6 +1,6 @@
 name: zItemStacker
 author: Maxlego08
 main: fr.maxlego08.zitemstacker.ZItemPlugin
-version: 1.0.0.2
+version: 1.0.0.3
 api-version: 1.13
 commands:

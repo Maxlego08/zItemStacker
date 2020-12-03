@@ -42,7 +42,9 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 	private static Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
 	private transient List<ItemStack> whitelistItems = new ArrayList<ItemStack>();
+	private transient List<ItemStack> blacklistItems = new ArrayList<ItemStack>();
 	private transient boolean enableWhitelist = false;
+	private transient boolean enableBlacklist = false;
 
 	public ZItemManager(JavaPlugin plugin) {
 		super(plugin);
@@ -129,6 +131,9 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		if (isEnable() && !isWhitelist(itemStack))
 			return;
+		
+		if (isEnableBlacklist() && isBlacklist(itemStack))
+			return;
 
 		Optional<ZItem> optional = getZItem(target);
 		Optional<ZItem> optional2 = getZItem(entity);
@@ -167,6 +172,9 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		if (isEnable() && !isWhitelist(itemStack))
 			return;
+		
+		if (isEnableBlacklist() && isBlacklist(itemStack))
+			return;
 
 		Optional<ZItem> optional = getNearbyItems(location, itemStack);
 		if (optional.isPresent()) {
@@ -200,6 +208,20 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 	private boolean isEnable() {
 		return this.enableWhitelist;
+	}
+
+	public boolean isEnableBlacklist() {
+		return enableBlacklist;
+	}
+
+	/**
+	 * 
+	 * @param itemStack
+	 * @return true if item is whitelist
+	 */
+	private boolean isBlacklist(ItemStack itemStack) {
+		return itemStack != null
+				&& this.blacklistItems.stream().filter(item -> item.isSimilar(itemStack)).findFirst().isPresent();
 	}
 
 	/**
@@ -254,8 +276,13 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		// Whitelist system
 		this.loadConfiguration();
+		// blacklist system
+		this.loadBlackConfiguration();
 	}
 
+	/**
+	 * 
+	 */
 	public void loadConfiguration() {
 		File file = new File(plugin.getDataFolder(), "whitelist.yml");
 		if (!file.exists()) {
@@ -282,6 +309,11 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 		}
 	}
 
+	/**
+	 * 
+	 * @param file
+	 * @throws IOException
+	 */
 	private void createDefaultFile(File file) throws IOException {
 
 		file.createNewFile();
@@ -296,6 +328,60 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 		AtomicInteger atomicInteger = new AtomicInteger(1);
 		itemStacks.forEach(itemStack -> {
 			loader.save(itemStack, configuration, "whitelist." + atomicInteger.getAndIncrement() + ".");
+		});
+
+		configuration.save(file);
+
+	}
+
+	/**
+	 * 
+	 */
+	public void loadBlackConfiguration() {
+		File file = new File(plugin.getDataFolder(), "blacklist.yml");
+		if (!file.exists()) {
+			try {
+				createDefaultBlackFile(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		YamlConfiguration configuration = getConfig(file);
+		enableBlacklist = configuration.getBoolean("enableBlacklist", false);
+		ConfigurationSection configurationSection = configuration.getConfigurationSection("blacklist.");
+		Loader<ItemStack> loader = new ItemStackLoader();
+
+		this.blacklistItems = new ArrayList<>();
+
+		for (String key : configurationSection.getKeys(false)) {
+
+			String path = "blacklist." + key + ".";
+
+			ItemStack itemStack = loader.load(configuration, path);
+			blacklistItems.add(itemStack);
+
+		}
+	}
+
+	/**
+	 * 
+	 * @param file
+	 * @throws IOException
+	 */
+	private void createDefaultBlackFile(File file) throws IOException {
+
+		file.createNewFile();
+		YamlConfiguration configuration = getConfig(file);
+		configuration.set("enableBlacklist", enableWhitelist);
+
+		List<ItemStack> itemStacks = new ArrayList<>();
+		itemStacks.add(new ItemStack(Material.BEDROCK));
+		itemStacks.add(new ItemStack(Material.DIAMOND));
+
+		Loader<ItemStack> loader = new ItemStackLoader();
+		AtomicInteger atomicInteger = new AtomicInteger(1);
+		itemStacks.forEach(itemStack -> {
+			loader.save(itemStack, configuration, "blacklist." + atomicInteger.getAndIncrement() + ".");
 		});
 
 		configuration.save(file);
