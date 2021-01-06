@@ -1,6 +1,8 @@
 package fr.maxlego08.zitemstacker.listener;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -30,6 +32,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
@@ -124,5 +127,8 @@ public abstract class ListenerAdapter extends YamlUtils{
 	}
 
 	public void onDeSpawn(ItemDespawnEvent event, Item entity, Location location) {
+	}
+
+	public void onChunkLoad(ChunkLoadEvent event, Chunk chunk, World world) {
 	}
 }

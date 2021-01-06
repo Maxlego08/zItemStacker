@@ -14,11 +14,13 @@ import org.bukkit.inventory.ItemStack;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
 
-public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
+public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item {
 
 	private transient Item item;
 	private final UUID uuid;
 	private int amount;
+	private final long createdAt;
+	private final long expireAt;
 
 	/**
 	 * @param item
@@ -26,6 +28,8 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 	public ZItem(Item item) {
 		super();
 		this.item = item;
+		this.createdAt = System.currentTimeMillis();
+		this.expireAt = System.currentTimeMillis() + (1000 * Config.expireItemSeconds);
 		this.uuid = item.getUniqueId();
 		this.amount = item.getItemStack().getAmount();
 		this.item.getItemStack().setAmount(1);
@@ -35,9 +39,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 	}
 
 	public boolean isValid() {
-		if (item == null)
-			getItem();
-		return item != null && item.isValid();
+		return this.expireAt > System.currentTimeMillis();
 	}
 
 	/**
@@ -77,7 +79,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 		this.amount += amount;
 		setItemName();
 	}
-	
+
 	public void remove(int amount) {
 		this.amount -= amount;
 		setItemName();
@@ -144,6 +146,16 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 	@Override
 	public Item toBukkitEntity() {
 		return this.getItem();
+	}
+
+	@Override
+	public long getCreatedAt() {
+		return this.createdAt;
+	}
+
+	@Override
+	public long getExpireAt() {
+		return this.expireAt;
 	}
 
 }

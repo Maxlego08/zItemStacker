@@ -109,9 +109,10 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 		if (optional.isPresent()) {
 
 			event.setCancelled(true);
-			target.remove();
+			// target.remove();
 
 			ZItem item = optional.get();
+
 			Inventory inventory = player.getInventory();
 			item.give(inventory);
 
@@ -121,6 +122,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			}
 
 			if (item.getAmount() <= 0) {
+
 				items.remove(item.getUniqueId());
 				item.remove();
 			}
@@ -255,6 +257,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			if (!item.isValid())
 				iterator.remove();
 		}
+
 		persist.save(this, "items");
 
 		File file = new File(plugin.getDataFolder(), "whitelist.yml");
@@ -271,6 +274,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 	@Override
 	public void load(Persist persist) {
 		persist.loadOrSaveDefault(this, ZItemManager.class, "items");
+
 		Iterator<Entry<UUID, ZItem>> iterator = items.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<UUID, ZItem> entry = iterator.next();
