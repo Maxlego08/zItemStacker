@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.maxlego08.zitemstacker.api.ItemManager;
+import fr.maxlego08.zitemstacker.api.enums.XSound;
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.utils.loader.ItemStackLoader;
@@ -114,6 +115,11 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			Inventory inventory = player.getInventory();
 			item.give(inventory);
 
+			if (Config.pickupSound != null && Config.enablePickupSound) {
+				XSound sound = Config.pickupSound;
+				sound.play(player);
+			}
+
 			if (item.getAmount() <= 0) {
 				items.remove(item.getUniqueId());
 				item.remove();
@@ -131,7 +137,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		if (isEnable() && !isWhitelist(itemStack))
 			return;
-		
+
 		if (isEnableBlacklist() && isBlacklist(itemStack))
 			return;
 
@@ -172,7 +178,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		if (isEnable() && !isWhitelist(itemStack))
 			return;
-		
+
 		if (isEnableBlacklist() && isBlacklist(itemStack))
 			return;
 
