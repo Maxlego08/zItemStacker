@@ -93,7 +93,10 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 		return uuid;
 	}
 
-	public void give(Inventory inventory) {
+	public boolean give(Inventory inventory) {
+
+		if (this.getItem() == null || this.getItem().getItemStack() == null)
+			return false;
 
 		int inventorySize = inventory.getType().equals(InventoryType.HOPPER) ? 5 : 36;
 		ItemStack itemStack = this.getItem().getItemStack();
@@ -125,22 +128,26 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 			}
 
 			if (this.amount <= 0)
-				return;
+				return true;
 
 		}
 
 		setItemName();
+		return true;
 	}
 
 	public void setItemName() {
-		String name = Config.itemName;
-		name = name.replace("%amount%", String.valueOf(this.amount));
-		name = name.replace("%item%", getItemName(getItem().getItemStack()));
-		this.getItem().setCustomName(name);
+		if (this.getItem() != null) {
+			String name = Config.itemName;
+			name = name.replace("%amount%", String.valueOf(this.amount));
+			name = name.replace("%item%", getItemName(getItem().getItemStack()));
+			this.getItem().setCustomName(name);
+		}
 	}
 
 	public void remove() {
-		this.getItem().remove();
+		if (this.getItem() != null)
+			this.getItem().remove();
 	}
 
 	@Override

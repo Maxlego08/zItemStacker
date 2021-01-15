@@ -114,7 +114,11 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			ZItem item = optional.get();
 
 			Inventory inventory = player.getInventory();
-			item.give(inventory);
+			if (!item.give(inventory)) {
+				target.remove();
+				item.remove();
+				return;
+			}
 
 			if (Config.pickupSound != null && Config.enablePickupSound) {
 				XSound sound = Config.pickupSound;
