@@ -128,6 +128,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			if (item.getAmount() <= 0) {
 
 				items.remove(item.getUniqueId());
+				target.remove();
 				item.remove();
 			}
 		}

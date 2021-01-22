@@ -86,7 +86,8 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 	}
 
 	public boolean isSimilar(ItemStack itemStack) {
-		return itemStack != null && isValid() && this.getItem().getItemStack().isSimilar(itemStack);
+		return itemStack != null && isValid() && this.getItem() != null && this.getItem().getItemStack() != null
+				&& this.getItem().getItemStack().isSimilar(itemStack);
 	}
 
 	public UUID getUniqueId() {
@@ -102,6 +103,9 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 		ItemStack itemStack = this.getItem().getItemStack();
 		for (int a = 0; a != inventorySize; a++) {
 
+			if (this.amount <= 0)
+				return true;
+
 			ItemStack currentItem = inventory.getItem(a);
 
 			// Si l'item est null alors on peut ajouter 64
@@ -112,6 +116,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 
 				ItemStack newItemStack = itemStack.clone();
 				newItemStack.setAmount(newAmount);
+
 				inventory.setItem(a, newItemStack);
 
 			}
