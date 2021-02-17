@@ -15,6 +15,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
@@ -130,5 +131,8 @@ public abstract class ListenerAdapter extends YamlUtils{
 	}
 
 	public void onChunkLoad(ChunkLoadEvent event, Chunk chunk, World world) {
+	}
+
+	public void onEntityPickUp(EntityPickupItemEvent event, LivingEntity entity, Item item) {
 	}
 }

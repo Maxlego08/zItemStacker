@@ -19,7 +19,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
@@ -77,6 +79,20 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			}
 
 		}
+	}
+
+	@Override
+	public void onEntityPickUp(EntityPickupItemEvent event, LivingEntity entity, Item item) {
+
+		if (event.isCancelled())
+			return;
+
+		Optional<ZItem> optional = getZItem(item);
+
+		if (optional.isPresent()) {
+			event.setCancelled(Config.disableEntityPickUp);
+		}
+
 	}
 
 	@Override
