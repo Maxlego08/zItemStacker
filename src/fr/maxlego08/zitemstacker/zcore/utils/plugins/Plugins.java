@@ -5,6 +5,8 @@ public enum Plugins {
 	VAULT("Vault"),
 	ESSENTIALS("Essentials"),
 	
+	UPGRADEABLEHOPPER("UpgradeableHopper"),
+	
 	;
 
 	private final String name;
