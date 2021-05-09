@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.maxlego08.zitemstacker.api.Item;
 import fr.maxlego08.zitemstacker.api.ItemManager;
 import me.angeschossen.upgradeablehoppers.api.ItemStackerIntegration;
+import me.angeschossen.upgradeablehoppers.api.UpgradeableHoppersAPI;
 
 public class UpgradeableHoppers implements ItemStackerIntegration {
 
@@ -18,6 +19,7 @@ public class UpgradeableHoppers implements ItemStackerIntegration {
 	public UpgradeableHoppers(ItemManager itemManager) {
 		super();
 		this.itemManager = itemManager;
+		UpgradeableHoppersAPI.setItemStackerIntegration(this);
 	}
 
 	/**

@@ -35,6 +35,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	private long enableTime;
 	private List<Saveable> savers = new ArrayList<>();
 	private List<ListenerAdapter> listenerAdapters = new ArrayList<>();
+	protected boolean useTranslateAPI = false;
 
 	protected CommandManager commandManager;
 
@@ -215,6 +216,10 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
 		commandManager.registerCommand(command, vCommand, aliases);
+	}
+	
+	public boolean useTranslateAPI() {
+		return useTranslateAPI;
 	}
 
 }

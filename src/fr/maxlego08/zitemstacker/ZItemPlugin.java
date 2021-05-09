@@ -12,8 +12,6 @@ import fr.maxlego08.zitemstacker.save.Lang;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.MetricsLite;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.Plugins;
-import me.angeschossen.upgradeablehoppers.api.ItemStackerIntegration;
-import me.angeschossen.upgradeablehoppers.api.UpgradeableHoppersAPI;
 
 /**
  * System to create your plugins very simply Projet:
@@ -54,8 +52,12 @@ public class ZItemPlugin extends ZPlugin {
 		getServer().getServicesManager().register(ItemManager.class, itemManager, this, ServicePriority.Highest);
 
 		if (isEnable(Plugins.UPGRADEABLEHOPPER)) {
-			ItemStackerIntegration hopper = new UpgradeableHoppers(itemManager);
-			UpgradeableHoppersAPI.setItemStackerIntegration(hopper);
+			new UpgradeableHoppers(itemManager);
+		}
+
+		if (isEnable(Plugins.TRANSLATIONAPI)) {
+			this.useTranslateAPI = true;
+			this.getLog().log("Translation API found. We will use for translations.");
 		}
 
 		postEnable();
