@@ -43,6 +43,8 @@ import org.bukkit.potion.PotionEffectType;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import br.net.fabiozumbi12.translationapi.TranslationAPI;
+import br.net.fabiozumbi12.translationapi.TranslationCore;
 import fr.maxlego08.zitemstacker.ZItemPlugin;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
 import fr.maxlego08.zitemstacker.zcore.enums.Permission;
@@ -54,7 +56,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.milkbowl.vault.economy.Economy;
 
 @SuppressWarnings("deprecation")
 public abstract class ZUtils extends MessageUtils {
@@ -232,162 +233,6 @@ public abstract class ZUtils extends MessageUtils {
 		return decimalFormat.format(decimal);
 	}
 
-	private transient Economy economy = ZPlugin.z().getEconomy();
-
-	/**
-	 * Player bank
-	 * 
-	 * @param player
-	 * @return player bank
-	 */
-	protected double getBalance(Player player) {
-		return economy.getBalance(player);
-	}
-
-	/**
-	 * Player has money
-	 * 
-	 * @param player
-	 * @param int
-	 *            value
-	 * @return player has value in his bank
-	 */
-	protected boolean hasMoney(Player player, int value) {
-		return hasMoney(player, (double) value);
-	}
-
-	/**
-	 * Player has money
-	 * 
-	 * @param player
-	 * @param float
-	 *            value
-	 * @return player has value in his bank
-	 */
-	protected boolean hasMoney(Player player, float value) {
-		return hasMoney(player, (double) value);
-	}
-
-	/**
-	 * Player has money
-	 * 
-	 * @param player
-	 * @param long
-	 *            value
-	 * @return player has value in his bank
-	 */
-	protected boolean hasMoney(Player player, long value) {
-		return hasMoney(player, (double) value);
-	}
-
-	/**
-	 * Player has money
-	 * 
-	 * @param player
-	 * @param double
-	 *            value
-	 * @return player has value in his bank
-	 */
-	protected boolean hasMoney(Player player, double value) {
-		return getBalance(player) >= value;
-	}
-
-	/**
-	 * Deposit player money
-	 * 
-	 * @param player
-	 * @param double
-	 *            value
-	 */
-	protected void depositMoney(Player player, double value) {
-		economy.depositPlayer(player, value);
-	}
-
-	/**
-	 * Deposit player money
-	 * 
-	 * @param player
-	 * @param long
-	 *            value
-	 */
-	protected void depositMoney(Player player, long value) {
-		economy.depositPlayer(player, (double) value);
-	}
-
-	/**
-	 * Deposit player money
-	 * 
-	 * @param player
-	 * @param int
-	 *            value
-	 */
-	protected void depositMoney(Player player, int value) {
-		economy.depositPlayer(player, (double) value);
-	}
-
-	/**
-	 * Deposit player money
-	 * 
-	 * @param player
-	 * @param float
-	 *            value
-	 */
-	protected void depositMoney(Player player, float value) {
-		economy.depositPlayer(player, (double) value);
-	}
-
-	/**
-	 * With draw player money
-	 * 
-	 * @param player
-	 * @param double
-	 *            value
-	 */
-	protected void withdrawMoney(Player player, double value) {
-		economy.withdrawPlayer(player, value);
-	}
-
-	/**
-	 * With draw player money
-	 * 
-	 * @param player
-	 * @param long
-	 *            value
-	 */
-	protected void withdrawMoney(Player player, long value) {
-		economy.withdrawPlayer(player, (double) value);
-	}
-
-	/**
-	 * With draw player money
-	 * 
-	 * @param player
-	 * @param int
-	 *            value
-	 */
-	protected void withdrawMoney(Player player, int value) {
-		economy.withdrawPlayer(player, (double) value);
-	}
-
-	/**
-	 * With draw player money
-	 * 
-	 * @param player
-	 * @param float
-	 *            value
-	 */
-	protected void withdrawMoney(Player player, float value) {
-		economy.withdrawPlayer(player, (double) value);
-	}
-
-	/**
-	 * 
-	 * @return {@link Economy}
-	 */
-	protected Economy getEconomy() {
-		return economy;
-	}
-
 	/**
 	 * 
 	 * @param player
@@ -535,7 +380,7 @@ public abstract class ZUtils extends MessageUtils {
 	protected boolean hasPermission(Permissible permissible, Permission permission) {
 		return permissible.hasPermission(permission.getPermission());
 	}
-	
+
 	/**
 	 * 
 	 * @param permissible
@@ -586,6 +431,13 @@ public abstract class ZUtils extends MessageUtils {
 	protected String getItemName(ItemStack item) {
 		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 			return item.getItemMeta().getDisplayName();
+		if (plugin == null)
+			plugin = (ZItemPlugin) ZPlugin.z();
+		if (plugin.useTranslateAPI()){
+			TranslationCore core = TranslationAPI.getAPI();
+			Material material = item.getType();
+			return core.translateItem(material, "en-us", true);
+		}
 		String name = item.serialize().get("type").toString().replace("_", " ").toLowerCase();
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}

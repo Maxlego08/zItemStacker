@@ -65,5 +65,9 @@ public interface Item {
 	 * Give items in inventory
 	 * @param inventory
 	 */
-	public void give(Inventory inventory);
+	public boolean give(Inventory inventory);
+	
+	public long getCreatedAt();
+	
+	public long getExpireAt();
 }

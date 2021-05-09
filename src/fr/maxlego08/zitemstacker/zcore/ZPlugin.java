@@ -25,7 +25,6 @@ import fr.maxlego08.zitemstacker.zcore.utils.gson.PotionEffectAdapter;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.Plugins;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Persist;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
-import net.milkbowl.vault.economy.Economy;
 
 public abstract class ZPlugin extends JavaPlugin {
 
@@ -36,7 +35,7 @@ public abstract class ZPlugin extends JavaPlugin {
 	private long enableTime;
 	private List<Saveable> savers = new ArrayList<>();
 	private List<ListenerAdapter> listenerAdapters = new ArrayList<>();
-	private Economy economy = null;
+	protected boolean useTranslateAPI = false;
 
 	protected CommandManager commandManager;
 
@@ -55,9 +54,6 @@ public abstract class ZPlugin extends JavaPlugin {
 
 		gson = getGsonBuilder().create();
 		persist = new Persist(this);
-
-		if (getPlugin(Plugins.VAULT) != null)
-			economy = getProvider(Economy.class);
 
 		return true;
 
@@ -177,10 +173,6 @@ public abstract class ZPlugin extends JavaPlugin {
 		return provider.getProvider() != null ? (T) provider.getProvider() : null;
 	}
 
-	public Economy getEconomy() {
-		return economy;
-	}
-
 	/**
 	 * 
 	 * @return listenerAdapters
@@ -224,6 +216,10 @@ public abstract class ZPlugin extends JavaPlugin {
 	 */
 	protected void registerCommand(String command, VCommand vCommand, String... aliases) {
 		commandManager.registerCommand(command, vCommand, aliases);
+	}
+	
+	public boolean useTranslateAPI() {
+		return useTranslateAPI;
 	}
 
 }

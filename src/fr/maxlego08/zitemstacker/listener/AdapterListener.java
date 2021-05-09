@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 
 import fr.maxlego08.zitemstacker.ZItemPlugin;
 import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
@@ -83,4 +84,14 @@ public class AdapterListener extends ZUtils implements Listener {
 	public void onDeSpawn(ItemDespawnEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onDeSpawn(event, event.getEntity(), event.getLocation()));
 	}
+	
+	@EventHandler
+	public void onChunkLoad(ChunkLoadEvent event) {
+		template.getListenerAdapters().forEach(adapter -> adapter.onChunkLoad(event, event.getChunk(), event.getWorld()));
+	}
+	
+	/*@EventHandler
+	public void onEntityPickup(EntityPickupItemEvent event) {
+		template.getListenerAdapters().forEach(adapter -> adapter.onEntityPickUp(event, event.getEntity(), event.getItem()));
+	}*/
 }

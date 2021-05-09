@@ -14,11 +14,13 @@ import org.bukkit.inventory.ItemStack;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
 
-public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
+public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item {
 
 	private transient Item item;
 	private final UUID uuid;
 	private int amount;
+	private final long createdAt;
+	private final long expireAt;
 
 	/**
 	 * @param item
@@ -26,6 +28,8 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 	public ZItem(Item item) {
 		super();
 		this.item = item;
+		this.createdAt = System.currentTimeMillis();
+		this.expireAt = System.currentTimeMillis() + (1000 * Config.expireItemSeconds);
 		this.uuid = item.getUniqueId();
 		this.amount = item.getItemStack().getAmount();
 		this.item.getItemStack().setAmount(1);
@@ -35,9 +39,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 	}
 
 	public boolean isValid() {
-		if (item == null)
-			getItem();
-		return item != null && item.isValid();
+		return this.expireAt > System.currentTimeMillis();
 	}
 
 	/**
@@ -77,25 +79,32 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 		this.amount += amount;
 		setItemName();
 	}
-	
+
 	public void remove(int amount) {
 		this.amount -= amount;
 		setItemName();
 	}
 
 	public boolean isSimilar(ItemStack itemStack) {
-		return itemStack != null && isValid() && this.getItem().getItemStack().isSimilar(itemStack);
+		return itemStack != null && isValid() && this.getItem() != null && this.getItem().getItemStack() != null
+				&& this.getItem().getItemStack().isSimilar(itemStack);
 	}
 
 	public UUID getUniqueId() {
 		return uuid;
 	}
 
-	public void give(Inventory inventory) {
+	public boolean give(Inventory inventory) {
+
+		if (this.getItem() == null || this.getItem().getItemStack() == null)
+			return false;
 
 		int inventorySize = inventory.getType().equals(InventoryType.HOPPER) ? 5 : 36;
 		ItemStack itemStack = this.getItem().getItemStack();
 		for (int a = 0; a != inventorySize; a++) {
+
+			if (this.amount <= 0)
+				return true;
 
 			ItemStack currentItem = inventory.getItem(a);
 
@@ -107,6 +116,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 
 				ItemStack newItemStack = itemStack.clone();
 				newItemStack.setAmount(newAmount);
+
 				inventory.setItem(a, newItemStack);
 
 			}
@@ -123,27 +133,41 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item{
 			}
 
 			if (this.amount <= 0)
-				return;
+				return true;
 
 		}
 
 		setItemName();
+		return true;
 	}
 
 	public void setItemName() {
-		String name = Config.itemName;
-		name = name.replace("%amount%", String.valueOf(this.amount));
-		name = name.replace("%item%", getItemName(getItem().getItemStack()));
-		this.getItem().setCustomName(name);
+		if (this.getItem() != null) {
+			String name = Config.itemName;
+			name = name.replace("%amount%", String.valueOf(this.amount));
+			name = name.replace("%item%", getItemName(getItem().getItemStack()));
+			this.getItem().setCustomName(name);
+		}
 	}
 
 	public void remove() {
-		this.getItem().remove();
+		if (this.getItem() != null)
+			this.getItem().remove();
 	}
 
 	@Override
 	public Item toBukkitEntity() {
 		return this.getItem();
+	}
+
+	@Override
+	public long getCreatedAt() {
+		return this.createdAt;
+	}
+
+	@Override
+	public long getExpireAt() {
+		return this.expireAt;
 	}
 
 }
