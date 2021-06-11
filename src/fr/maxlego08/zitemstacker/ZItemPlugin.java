@@ -12,6 +12,7 @@ import fr.maxlego08.zitemstacker.save.Lang;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.MetricsLite;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.Plugins;
+import fr.maxlego08.zitemstacker.zcore.utils.plugins.VersionChecker;
 
 /**
  * System to create your plugins very simply Projet:
@@ -60,6 +61,9 @@ public class ZItemPlugin extends ZPlugin {
 			this.getLog().log("Translation API found. We will use for translations.");
 		}
 
+		VersionChecker checker = new VersionChecker(this, 15);
+		checker.useLastVersion();
+		
 		postEnable();
 	}
 

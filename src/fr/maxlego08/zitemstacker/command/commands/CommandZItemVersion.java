@@ -20,6 +20,7 @@ public class CommandZItemVersion extends VCommand {
 
 		sender.sendMessage("§7(§bzItemStacker§7) §aVersion du plugin§7: §2" + plugin.getDescription().getVersion());
 		sender.sendMessage("§7(§bzItemStacker§7) §aAuteur§7: §2Maxlego08");
+		sender.sendMessage("§7(§bzItemStacker§7) §aDownload§7: §2https://groupez.dev/resources/zitemstacker.15");
 		sender.sendMessage("§7(§bzItemStacker§7) §aDiscord§7: §2http://discord.groupez.xyz/");
 
 		return CommandType.SUCCESS;
