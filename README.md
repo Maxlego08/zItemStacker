@@ -4,7 +4,7 @@ Allows you to stack your items
 
 ## API
 
-Java docs: https://docs.groupez.xyz/zitemstacker/
+Java docs: https://javadocs.groupez.xyz/zitemstacker/
 
 Get ItemManager:
 ```java
