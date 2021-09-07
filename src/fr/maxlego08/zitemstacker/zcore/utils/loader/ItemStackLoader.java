@@ -32,6 +32,7 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 		int data = configuration.getInt(path + "data", 0);
 		int amount = configuration.getInt(path + "amount", 1);
 		short durability = (short) configuration.getInt(path + "durability", 0);
+		int modelID = configuration.getInt(path + "modelID", 0);
 
 		Material material = null;
 
@@ -76,6 +77,11 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			item.setDurability(durability);
 
 		ItemMeta meta = item.getItemMeta();
+
+		if (modelID < 0)
+			modelID = 0;
+		if (modelID > 0)
+			meta.setCustomModelData(modelID);
 
 		List<String> tmpLore = configuration.getStringList(path + "lore");
 		if (tmpLore.size() != 0) {
@@ -204,10 +210,10 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			configuration.set(path + "enchants", enchantList);
 		}
 
-		if (NMSUtils.getNMSVersion() >= 1.14 &&  meta.hasCustomModelData()) {
+		if (NMSUtils.getNMSVersion() >= 1.14 && meta.hasCustomModelData()) {
 			configuration.set(path + "modelID", meta.getCustomModelData());
 		}
-		
+
 	}
 
 }
