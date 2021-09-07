@@ -21,12 +21,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -82,15 +84,29 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 	}
 
 	@Override
-	public void onEntityPickUp(EntityPickupItemEvent event, LivingEntity entity, Item item) {
+	public void onEntityPickUp(EntityPickupItemEvent event, LivingEntity entity, Item spigotItem) {
 
 		if (event.isCancelled())
 			return;
 
-		Optional<ZItem> optional = getZItem(item);
+		Optional<ZItem> optional = this.getZItem(spigotItem);
 
 		if (optional.isPresent()) {
-			event.setCancelled(Config.disableEntityPickUp);
+			if (Config.disableEntityPickUp)
+				event.setCancelled(true);
+			else {
+
+				EntityEquipment entityEquipment = entity.getEquipment();
+				ZItem item = optional.get();
+				event.setCancelled(true);
+				
+				if (item.getAmount() > spigotItem.getItemStack().getMaxStackSize()){
+					
+				} else {
+					
+				}
+
+			}
 		}
 
 	}

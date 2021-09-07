@@ -204,6 +204,10 @@ public class ItemStackLoader extends ZUtils implements Loader<ItemStack> {
 			configuration.set(path + "enchants", enchantList);
 		}
 
+		if (NMSUtils.getNMSVersion() >= 1.14 &&  meta.hasCustomModelData()) {
+			configuration.set(path + "modelID", meta.getCustomModelData());
+		}
+		
 	}
 
 }

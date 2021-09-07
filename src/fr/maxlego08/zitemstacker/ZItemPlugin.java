@@ -63,7 +63,7 @@ public class ZItemPlugin extends ZPlugin {
 
 		VersionChecker checker = new VersionChecker(this, 15);
 		checker.useLastVersion();
-		
+
 		postEnable();
 	}
 
