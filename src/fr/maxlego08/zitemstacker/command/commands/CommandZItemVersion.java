@@ -23,6 +23,8 @@ public class CommandZItemVersion extends VCommand {
 		sender.sendMessage("§7(§bzItemStacker§7) §aDownload§7: §2https://groupez.dev/resources/zitemstacker.15");
 		sender.sendMessage("§7(§bzItemStacker§7) §aDiscord§7: §2http://discord.groupez.xyz/");
 
+		sender.sendMessage("§8(§fServeur Minecraft Vote§8) §aSponsor§7: §chttps://serveur-minecraft-vote.fr/?ref=345");
+		
 		return CommandType.SUCCESS;
 	}
 

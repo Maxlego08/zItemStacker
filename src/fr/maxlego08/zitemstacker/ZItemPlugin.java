@@ -7,9 +7,11 @@ import fr.maxlego08.zitemstacker.command.CommandManager;
 import fr.maxlego08.zitemstacker.command.commands.CommandZItem;
 import fr.maxlego08.zitemstacker.integration.UpgradeableHoppers;
 import fr.maxlego08.zitemstacker.listener.AdapterListener;
+import fr.maxlego08.zitemstacker.listener.AdapterListener2;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.save.Lang;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
+import fr.maxlego08.zitemstacker.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.MetricsLite;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.Plugins;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.VersionChecker;
@@ -39,6 +41,11 @@ public class ZItemPlugin extends ZPlugin {
 		/* Add Listener */
 
 		addListener(new AdapterListener(this));
+
+		if (!NMSUtils.isNotEventVersion()) {
+			addListener(new AdapterListener2(this));
+		}
+
 		addListener(itemManager = new ZItemManager(this));
 
 		/* Add Saver */

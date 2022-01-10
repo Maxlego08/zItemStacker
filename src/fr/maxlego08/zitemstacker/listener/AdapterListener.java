@@ -89,9 +89,4 @@ public class AdapterListener extends ZUtils implements Listener {
 	public void onChunkLoad(ChunkLoadEvent event) {
 		template.getListenerAdapters().forEach(adapter -> adapter.onChunkLoad(event, event.getChunk(), event.getWorld()));
 	}
-	
-	/*@EventHandler
-	public void onEntityPickup(EntityPickupItemEvent event) {
-		template.getListenerAdapters().forEach(adapter -> adapter.onEntityPickUp(event, event.getEntity(), event.getItem()));
-	}*/
 }

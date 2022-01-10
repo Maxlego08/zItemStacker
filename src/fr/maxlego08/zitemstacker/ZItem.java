@@ -117,7 +117,8 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 				ItemStack newItemStack = itemStack.clone();
 				newItemStack.setAmount(newAmount);
 
-				inventory.setItem(a, newItemStack);
+//				inventory.setItem(a, newItemStack);
+				inventory.addItem(newItemStack);
 
 			}
 			// Si l'item est le même
@@ -143,7 +144,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 
 	public void setItemName() {
 		if (this.getItem() != null) {
-			String name = Config.itemName;
+			String name = color(Config.itemName);
 			name = name.replace("%amount%", String.valueOf(this.amount));
 			name = name.replace("%item%", getItemName(getItem().getItemStack()));
 			this.getItem().setCustomName(name);

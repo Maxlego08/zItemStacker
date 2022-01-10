@@ -13,6 +13,7 @@ public class Config implements Saveable {
 	public static long expireItemSeconds = 86400 * 7;
 	public static boolean enablePickupSound = false;
 	public static boolean disableEntityPickUp = true;
+	public static boolean disableAds = false;
 	public static XSound pickupSound = XSound.BLOCK_NOTE_BLOCK_PLING;
 
 	/**

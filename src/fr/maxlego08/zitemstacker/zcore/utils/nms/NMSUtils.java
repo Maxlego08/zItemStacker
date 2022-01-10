@@ -88,6 +88,15 @@ public class NMSUtils {
 	}
 
 	/**
+	 * Check if version is old version of minecraft with old material system
+	 * 
+	 * @return boolean
+	 */
+	public static boolean isNotEventVersion() {
+		return version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.11;
+	}
+
+	/**
 	 * 
 	 * Check if server vesion is new version
 	 * 
@@ -102,9 +111,23 @@ public class NMSUtils {
 		}
 	}
 
-	public static boolean isPiglin() {
-		return !(version == 1.7 || version == 1.8 || version == 1.9 || version == 1.10 || version == 1.12
-				|| version == 1.11 || version == 1.12 || version == 1.13 || version == 1.14 || version == 1.15);
+	/**
+	 * Allows to check if the version has the colors in hex
+	 * 
+	 * @return boolean
+	 */
+	public static boolean isHexColor() {
+		switch (String.valueOf(version)) {
+		case "1.21":
+		case "1.20":
+		case "1.19":
+		case "1.18":
+		case "1.17":
+		case "1.16":
+			return true;
+		default:
+			return false;
+		}
 	}
 
 }

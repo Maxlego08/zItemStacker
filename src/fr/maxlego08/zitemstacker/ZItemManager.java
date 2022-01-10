@@ -21,14 +21,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Skeleton;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -83,30 +84,59 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 		}
 	}
 
+	/**
+	 * 
+	 * @param entityEquipment
+	 * @param itemStack
+	 * @return
+	 */
+	private EquipmentSlot getEquipmentSlot(EntityEquipment entityEquipment, ItemStack itemStack) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			ItemStack currentItemStack = entityEquipment.getItem(equipmentSlot);
+			if (currentItemStack.isSimilar(itemStack)) {
+				return equipmentSlot;
+			}
+		}
+		return null;
+	}
+
 	@Override
-	public void onEntityPickUp(EntityPickupItemEvent event, LivingEntity entity, Item spigotItem) {
-
-		if (event.isCancelled())
+	public void onEntityPickUp(EntityPickupItemEvent event, LivingEntity entity, Item target) {
+		
+		if (event.isCancelled()) {
 			return;
+		}
 
-		Optional<ZItem> optional = this.getZItem(spigotItem);
+		Optional<ZItem> optional = this.getZItem(target);
 
 		if (optional.isPresent()) {
-			if (Config.disableEntityPickUp)
-				event.setCancelled(true);
-			else {
 
-				EntityEquipment entityEquipment = entity.getEquipment();
-				ZItem item = optional.get();
-				event.setCancelled(true);
-				
-				if (item.getAmount() > spigotItem.getItemStack().getMaxStackSize()){
-					
-				} else {
-					
-				}
+			event.setCancelled(true);
 
+			if (Config.disableEntityPickUp) {				
+				return;
 			}
+
+			ZItem item = optional.get();
+			EntityEquipment entityEquipment = entity.getEquipment();
+			
+			EquipmentSlot slot = this.getEquipmentSlot(entityEquipment, target.getItemStack().clone());
+			
+			if (slot == null && event.getRemaining() == 0){
+				
+				slot = EquipmentSlot.HAND;
+				ItemStack itemStack = target.getItemStack().clone();
+				itemStack.setAmount(item.getAmount());
+				item.remove();
+				
+				entityEquipment.setItem(slot, itemStack);
+				entityEquipment.setItemInMainHandDropChance(2.0f);
+				
+				return;
+			}
+			
+			// System.out.println(slot);
+			// System.out.println(event.getRemaining());
 		}
 
 	}
@@ -125,6 +155,16 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			else
 				items.remove(entity.getUniqueId());
 
+		}
+	}
+
+	@Override
+	protected void onConnect(PlayerJoinEvent event, Player player) {
+		if (!Config.disableAds) {
+			schedule(1000, () -> {
+				player.sendMessage(
+						"§8(§fServeur Minecraft Vote§8) §azItemStacker Sponsor§7: §chttps://serveur-minecraft-vote.fr/?ref=345");
+			});
 		}
 	}
 
@@ -212,7 +252,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		if (event.isCancelled())
 			return;
-
+		
 		ItemStack itemStack = entity.getItemStack();
 
 		if (isEnable() && !isWhitelist(itemStack))
