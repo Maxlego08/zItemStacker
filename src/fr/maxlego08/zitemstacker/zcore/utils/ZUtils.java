@@ -43,8 +43,6 @@ import org.bukkit.potion.PotionEffectType;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import br.net.fabiozumbi12.translationapi.TranslationAPI;
-import br.net.fabiozumbi12.translationapi.TranslationCore;
 import fr.maxlego08.zitemstacker.ZItemPlugin;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
 import fr.maxlego08.zitemstacker.zcore.enums.Permission;
@@ -421,25 +419,6 @@ public abstract class ZUtils extends MessageUtils {
 			return element.get(0);
 		Random random = new Random();
 		return element.get(random.nextInt(element.size() - 1));
-	}
-
-	/**
-	 * 
-	 * @param item
-	 * @return
-	 */
-	protected String getItemName(ItemStack item) {
-		if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-			return item.getItemMeta().getDisplayName();
-		if (plugin == null)
-			plugin = (ZItemPlugin) ZPlugin.z();
-		if (plugin.useTranslateAPI()){
-			TranslationCore core = TranslationAPI.getAPI();
-			Material material = item.getType();
-			return core.translateItem(material, "en-us", true);
-		}
-		String name = item.serialize().get("type").toString().replace("_", " ").toLowerCase();
-		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
 	/**
