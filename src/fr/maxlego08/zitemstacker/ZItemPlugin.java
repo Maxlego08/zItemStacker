@@ -63,10 +63,8 @@ public class ZItemPlugin extends ZPlugin {
 			new UpgradeableHoppers(itemManager);
 		}
 
-		if (isEnable(Plugins.TRANSLATIONAPI)) {
-			this.useTranslateAPI = true;
-			this.getLog().log("Translation API found. We will use for translations.");
-		}
+		VersionChecker checker = new VersionChecker(this, 15);
+		checker.useLastVersion();
 
 		VersionChecker checker = new VersionChecker(this, 15);
 		checker.useLastVersion();

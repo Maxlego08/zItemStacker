@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.enums.Message;
 import fr.maxlego08.zitemstacker.zcore.logger.Logger;
 
@@ -49,7 +48,8 @@ public class VersionChecker implements Listener {
 	 */
 	public void useLastVersion() {
 
-		Bukkit.getPluginManager().registerEvents(this, this.plugin);
+		Bukkit.getPluginManager().registerEvents(this, this.plugin); // Register
+																		// event
 
 		String pluginVersion = plugin.getDescription().getVersion();
 		AtomicBoolean atomicBoolean = new AtomicBoolean();
@@ -59,14 +59,11 @@ public class VersionChecker implements Listener {
 			long plVersion = Long.valueOf(pluginVersion.replace(".", ""));
 			atomicBoolean.set(plVersion >= ver);
 			this.useLastVersion = atomicBoolean.get();
-			if (!Config.disableVersionChecker) {
-				if (atomicBoolean.get())
-					Logger.info("No update available.");
-				else {
-					Logger.info(
-							"New update available. Your version: " + pluginVersion + ", latest version: " + version);
-					Logger.info("Download plugin here: " + String.format(URL_RESOURCE, this.pluginID));
-				}
+			if (atomicBoolean.get())
+				Logger.info("No update available.");
+			else {
+				Logger.info("New update available. Your version: " + pluginVersion + ", latest version: " + version);
+				Logger.info("Download plugin here: " + String.format(URL_RESOURCE, this.pluginID));
 			}
 		});
 
@@ -75,7 +72,7 @@ public class VersionChecker implements Listener {
 	@EventHandler
 	public void onConnect(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		if (!useLastVersion && event.getPlayer().hasPermission("zplugin.notifs") && !Config.disableVersionChecker) {
+		if (!useLastVersion && event.getPlayer().hasPermission("zplugin.notifs")) {
 			new BukkitRunnable() {
 				@Override
 				public void run() {

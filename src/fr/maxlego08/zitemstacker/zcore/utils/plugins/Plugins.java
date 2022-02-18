@@ -6,7 +6,7 @@ public enum Plugins {
 	ESSENTIALS("Essentials"),
 	
 	UPGRADEABLEHOPPER("UpgradeableHopper"),
-	TRANSLATIONAPI("TranslationAPI"),
+	ZTRANSLATOR("zTranslator"),
 	
 	;
 

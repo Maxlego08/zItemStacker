@@ -44,5 +44,10 @@
 			<version>LATEST</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.Maxlego08</groupId>
+			<artifactId>zTranslator</artifactId>
+			<version>1.0.0.0</version>
+		</dependency>
 	</dependencies>
 </project>
