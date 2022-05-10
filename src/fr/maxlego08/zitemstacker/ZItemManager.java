@@ -102,7 +102,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 	@Override
 	public void onEntityPickUp(EntityPickupItemEvent event, LivingEntity entity, Item target) {
-		
+
 		if (event.isCancelled()) {
 			return;
 		}
@@ -113,28 +113,36 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 			event.setCancelled(true);
 
-			if (Config.disableEntityPickUp) {				
+			if (Config.disableEntityPickUp) {
 				return;
 			}
 
 			ZItem item = optional.get();
 			EntityEquipment entityEquipment = entity.getEquipment();
-			
+
 			EquipmentSlot slot = this.getEquipmentSlot(entityEquipment, target.getItemStack().clone());
-			
-			if (slot == null && event.getRemaining() == 0){
-				
+
+			if (slot == null && event.getRemaining() == 0) {
+
+				int maxAmount = Math.min(item.getAmount(), item.getItem().getItemStack().getMaxStackSize());
+
 				slot = EquipmentSlot.HAND;
 				ItemStack itemStack = target.getItemStack().clone();
-				itemStack.setAmount(item.getAmount());
-				item.remove();
-				
+				itemStack.setAmount(maxAmount);
+
+				int newAmount = item.getAmount() - maxAmount;
+				if (newAmount > 0) {
+					item.remove(maxAmount);
+				} else {
+					item.remove();
+				}
+
 				entityEquipment.setItem(slot, itemStack);
 				entityEquipment.setItemInMainHandDropChance(2.0f);
-				
+
 				return;
 			}
-			
+
 			// System.out.println(slot);
 			// System.out.println(event.getRemaining());
 		}
@@ -144,16 +152,18 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 	@Override
 	public void onDeSpawn(ItemDespawnEvent event, Item entity, Location location) {
 
-		if (event.isCancelled())
+		if (event.isCancelled()) {
 			return;
+		}
 
 		Optional<ZItem> optional = getZItem(entity);
 		if (optional.isPresent()) {
 
-			if (Config.disableItemDespawn)
+			if (Config.disableItemDespawn) {
 				event.setCancelled(true);
-			else
+			} else {
 				items.remove(entity.getUniqueId());
+			}
 
 		}
 	}
@@ -173,8 +183,9 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		Item target = event.getItem();
 
-		if (event.isCancelled())
+		if (event.isCancelled()) {
 			return;
+		}
 
 		Optional<ZItem> optional = getZItem(target);
 
@@ -209,16 +220,19 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 	@Override
 	public void onItemMerge(ItemMergeEvent event, Item entity, Item target) {
 
-		if (event.isCancelled())
+		if (event.isCancelled()) {
 			return;
+		}
 
 		ItemStack itemStack = entity.getItemStack();
 
-		if (isEnable() && !isWhitelist(itemStack))
+		if (isEnable() && !isWhitelist(itemStack)) {
 			return;
+		}
 
-		if (isEnableBlacklist() && isBlacklist(itemStack))
+		if (isEnableBlacklist() && isBlacklist(itemStack)) {
 			return;
+		}
 
 		Optional<ZItem> optional = getZItem(target);
 		Optional<ZItem> optional2 = getZItem(entity);
@@ -252,22 +266,25 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		if (event.isCancelled())
 			return;
-		
+
 		ItemStack itemStack = entity.getItemStack();
 
-		if (isEnable() && !isWhitelist(itemStack))
+		if (isEnable() && !isWhitelist(itemStack)) {
 			return;
+		}
 
-		if (isEnableBlacklist() && isBlacklist(itemStack))
+		if (isEnableBlacklist() && isBlacklist(itemStack)) {
 			return;
+		}
 
 		Optional<ZItem> optional = getNearbyItems(location, itemStack);
 		if (optional.isPresent()) {
 
 			ZItem item = optional.get();
 
-			if (!item.isValid())
+			if (!item.isValid()) {
 				return;
+			}
 
 			item.add(itemStack.getAmount());
 			entity.remove();
