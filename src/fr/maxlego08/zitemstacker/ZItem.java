@@ -34,7 +34,6 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 		this.amount = item.getItemStack().getAmount();
 		this.item.getItemStack().setAmount(1);
 
-		item.setCustomNameVisible(true);
 		setItemName();
 	}
 
@@ -117,7 +116,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 				ItemStack newItemStack = itemStack.clone();
 				newItemStack.setAmount(newAmount);
 
-//				inventory.setItem(a, newItemStack);
+				// inventory.setItem(a, newItemStack);
 				inventory.addItem(newItemStack);
 
 			}
@@ -144,10 +143,16 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 
 	public void setItemName() {
 		if (this.getItem() != null) {
-			String name = color(Config.itemName);
-			name = name.replace("%amount%", String.valueOf(this.amount));
-			name = name.replace("%item%", name(getItem().getItemStack()));
-			this.getItem().setCustomName(color(name));
+
+			if (this.amount == 1 && Config.disableItemNameIfItsOne) {
+				this.getItem().setCustomNameVisible(false);
+			} else {
+				String name = color(Config.itemName);
+				name = name.replace("%amount%", String.valueOf(this.amount));
+				name = name.replace("%item%", name(getItem().getItemStack()));
+				this.getItem().setCustomNameVisible(true);
+				this.getItem().setCustomName(color(name));
+			}
 		}
 	}
 
