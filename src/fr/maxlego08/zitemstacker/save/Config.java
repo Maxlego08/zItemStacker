@@ -6,6 +6,7 @@ import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 
 public class Config implements Saveable {
 
+	public static String JoinServerMinecraftVote = "https://serveur-minecraft-vote.fr/";
 	public static double distanceOnDrop = 8.0;
 	public static boolean disableItemDespawn = true;
 	public static boolean disableVersionChecker = false;
@@ -14,6 +15,7 @@ public class Config implements Saveable {
 	public static boolean enablePickupSound = false;
 	public static boolean disableEntityPickUp = true;
 	public static boolean disableAds = false;
+	public static boolean disableItemNameIfItsOne = true;
 	public static XSound pickupSound = XSound.BLOCK_NOTE_BLOCK_PLING;
 
 	/**

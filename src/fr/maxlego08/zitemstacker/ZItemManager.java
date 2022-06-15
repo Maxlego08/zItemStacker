@@ -38,6 +38,8 @@ import fr.maxlego08.zitemstacker.api.ItemManager;
 import fr.maxlego08.zitemstacker.api.enums.XSound;
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
 import fr.maxlego08.zitemstacker.save.Config;
+import fr.maxlego08.zitemstacker.zcore.logger.Logger;
+import fr.maxlego08.zitemstacker.zcore.logger.Logger.LogType;
 import fr.maxlego08.zitemstacker.zcore.utils.loader.ItemStackLoader;
 import fr.maxlego08.zitemstacker.zcore.utils.loader.Loader;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Persist;
@@ -408,7 +410,11 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			String path = "whitelist." + key + ".";
 
 			ItemStack itemStack = loader.load(configuration, path);
-			whitelistItems.add(itemStack);
+			if (itemStack == null) {
+				Logger.info("Error with item " + path + " in whitelist items !", LogType.ERROR);
+				continue;
+			}
+			this.whitelistItems.add(itemStack);
 
 		}
 	}
@@ -422,7 +428,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 		file.createNewFile();
 		YamlConfiguration configuration = getConfig(file);
-		configuration.set("enableWhitelist", enableWhitelist);
+		configuration.set("enableWhitelist", this.enableWhitelist);
 
 		List<ItemStack> itemStacks = new ArrayList<>();
 		itemStacks.add(new ItemStack(Material.MELON));
@@ -462,7 +468,11 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			String path = "blacklist." + key + ".";
 
 			ItemStack itemStack = loader.load(configuration, path);
-			blacklistItems.add(itemStack);
+			if (itemStack == null) {
+				Logger.info("Error with item " + path + " in blacklist items !", LogType.ERROR);
+				continue;
+			}
+			this.blacklistItems.add(itemStack);
 
 		}
 	}
