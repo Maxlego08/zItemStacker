@@ -6,6 +6,7 @@ import fr.maxlego08.zitemstacker.api.ItemManager;
 import fr.maxlego08.zitemstacker.command.CommandManager;
 import fr.maxlego08.zitemstacker.command.commands.CommandZItem;
 import fr.maxlego08.zitemstacker.integration.UpgradeableHoppers;
+import fr.maxlego08.zitemstacker.integration.WildChests;
 import fr.maxlego08.zitemstacker.listener.AdapterListener;
 import fr.maxlego08.zitemstacker.listener.AdapterListener2;
 import fr.maxlego08.zitemstacker.save.Config;
@@ -61,6 +62,14 @@ public class ZItemPlugin extends ZPlugin {
 
 		if (isEnable(Plugins.UPGRADEABLEHOPPER)) {
 			new UpgradeableHoppers(itemManager);
+		}
+		
+		if (isEnable(Plugins.UPGRADEABLEHOPPER)) {
+			new UpgradeableHoppers(this.itemManager);
+		}
+		
+		if (isEnable(Plugins.WILDCHEST)) {
+			new WildChests(this.itemManager);
 		}
 
 		VersionChecker checker = new VersionChecker(this, 15);

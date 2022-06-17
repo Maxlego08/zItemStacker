@@ -1,9 +1,10 @@
 name: zItemStacker
 author: Maxlego08
 main: fr.maxlego08.zitemstacker.ZItemPlugin
-version: 1.0.2.1
+version: 1.0.2.2
 api-version: 1.13
-soft-depend:
+softdepend:
 - UpgradeableHopper
 - TranslationAPI
+- WildChests
 commands:
