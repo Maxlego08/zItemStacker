@@ -18,13 +18,14 @@ public class CommandZItemVersion extends VCommand {
 	@Override
 	protected CommandType perform(ZItemPlugin plugin) {
 
-		sender.sendMessage("§7(§bzItemStacker§7) §aVersion du plugin§7: §2" + plugin.getDescription().getVersion());
-		sender.sendMessage("§7(§bzItemStacker§7) §aAuteur§7: §2Maxlego08");
-		sender.sendMessage("§7(§bzItemStacker§7) §aDownload§7: §2https://groupez.dev/resources/zitemstacker.15");
-		sender.sendMessage("§7(§bzItemStacker§7) §aDiscord§7: §2http://discord.groupez.xyz/");
+		this.sender
+				.sendMessage("§7(§bzItemStacker§7) §aVersion du plugin§7: §2" + plugin.getDescription().getVersion());
+		this.sender.sendMessage("§7(§bzItemStacker§7) §aAuteur§7: §2Maxlego08");
+		this.sender.sendMessage("§7(§bzItemStacker§7) §aDownload§7: §2https://groupez.dev/resources/zitemstacker.15");
+		this.sender.sendMessage("§7(§bzItemStacker§7) §aDiscord§7: §2http://discord.groupez.dev/");
+		this.sender.sendMessage(
+				"§8(§fServeur Minecraft Vote§8) §aSponsor§7: §chttps://serveur-minecraft-vote.fr/?ref=345");
 
-		sender.sendMessage("§8(§fServeur Minecraft Vote§8) §aSponsor§7: §chttps://serveur-minecraft-vote.fr/?ref=345");
-		
 		return CommandType.SUCCESS;
 	}
 

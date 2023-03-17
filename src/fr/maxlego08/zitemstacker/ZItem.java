@@ -145,12 +145,12 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 		if (this.getItem() != null) {
 
 			if (this.amount == 1 && Config.disableItemNameIfItsOne) {
-				this.getItem().setCustomNameVisible(false);
+				this.getItem().setCustomNameVisible(Config.customNameVisible);
 			} else {
 				String name = color(Config.itemName);
 				name = name.replace("%amount%", String.valueOf(this.amount));
 				name = name.replace("%item%", name(getItem().getItemStack()));
-				this.getItem().setCustomNameVisible(true);
+				this.getItem().setCustomNameVisible(Config.customNameVisible);
 				this.getItem().setCustomName(color(name));
 			}
 		}

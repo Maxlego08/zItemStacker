@@ -6,6 +6,7 @@ public enum Plugins {
 	ESSENTIALS("Essentials"),
 	
 	UPGRADEABLEHOPPER("UpgradeableHopper"),
+	WILDCHEST("WildChests"),
 	ZTRANSLATOR("zTranslator"),
 	
 	;
