@@ -88,6 +88,7 @@ public class MetricsLite {
 	 *            <a href="https://bstats.org/what-is-my-plugin-id">What is my
 	 *            plugin id?</a>
 	 */
+	@SuppressWarnings("deprecation")
 	public MetricsLite(Plugin plugin, int pluginId) {
 		if (plugin == null) {
 			throw new IllegalArgumentException("Plugin cannot be null!");

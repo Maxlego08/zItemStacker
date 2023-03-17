@@ -1,5 +1,6 @@
 package fr.maxlego08.zitemstacker.zcore;
 
+import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,14 @@ public abstract class ZPlugin extends JavaPlugin {
 		gson = getGsonBuilder().create();
 		persist = new Persist(this);
 
+		if (!new File(getDataFolder(), "whitelist.yml").exists()) {
+			saveResource("whitelist.yml", false);
+		}
+		
+		if (!new File(getDataFolder(), "blacklist.yml").exists()) {
+			saveResource("blacklist.yml", false);
+		}
+		
 		return true;
 
 	}

@@ -10,7 +10,7 @@ import fr.maxlego08.zitemstacker.integration.WildChests;
 import fr.maxlego08.zitemstacker.listener.AdapterListener;
 import fr.maxlego08.zitemstacker.listener.AdapterListener2;
 import fr.maxlego08.zitemstacker.save.Config;
-import fr.maxlego08.zitemstacker.save.Lang;
+import fr.maxlego08.zitemstacker.save.MessageLoader;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
 import fr.maxlego08.zitemstacker.zcore.utils.nms.NMSUtils;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.MetricsLite;
@@ -33,7 +33,7 @@ public class ZItemPlugin extends ZPlugin {
 
 		preEnable();
 
-		commandManager = new CommandManager(this);
+		this.commandManager = new CommandManager(this);
 
 		/* Commands */
 
@@ -51,17 +51,17 @@ public class ZItemPlugin extends ZPlugin {
 
 		/* Add Saver */
 		addSave(Config.getInstance());
-		addSave(Lang.getInstance());
+		addSave(new MessageLoader(this));
 
 		getSavers().forEach(saver -> saver.load(getPersist()));
 
 		new MetricsLite(this, 9330);
 
 		// Register provider
-		getServer().getServicesManager().register(ItemManager.class, itemManager, this, ServicePriority.Highest);
+		getServer().getServicesManager().register(ItemManager.class, this.itemManager, this, ServicePriority.Highest);
 
 		if (isEnable(Plugins.UPGRADEABLEHOPPER)) {
-			new UpgradeableHoppers(itemManager);
+			new UpgradeableHoppers(this.itemManager);
 		}
 		
 		if (isEnable(Plugins.UPGRADEABLEHOPPER)) {

@@ -3,7 +3,7 @@ package fr.maxlego08.zitemstacker.command.commands;
 import fr.maxlego08.zitemstacker.ZItemPlugin;
 import fr.maxlego08.zitemstacker.command.VCommand;
 import fr.maxlego08.zitemstacker.save.Config;
-import fr.maxlego08.zitemstacker.save.Lang;
+import fr.maxlego08.zitemstacker.save.MessageLoader;
 import fr.maxlego08.zitemstacker.zcore.enums.Message;
 import fr.maxlego08.zitemstacker.zcore.enums.Permission;
 import fr.maxlego08.zitemstacker.zcore.utils.commands.CommandType;
@@ -21,8 +21,11 @@ public class CommandZItemReload extends VCommand {
 	@Override
 	protected CommandType perform(ZItemPlugin plugin) {
 
-		Config.getInstance().load(plugin.getPersist());
-		Lang.getInstance().load(plugin.getPersist());
+		plugin.getSavers().forEach(e -> {
+			if (e instanceof Config || e instanceof MessageLoader){
+				e.load(plugin.getPersist());
+			}
+		});
 		plugin.getItemManager().loadConfiguration();
 		plugin.getItemManager().loadBlackConfiguration();
 		

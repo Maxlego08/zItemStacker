@@ -17,6 +17,7 @@ public class Config implements Saveable {
 	public static boolean disableAds = false;
 	public static boolean disableItemNameIfItsOne = true;
 	public static XSound pickupSound = XSound.BLOCK_NOTE_BLOCK_PLING;
+	public static boolean customNameVisible = true;
 
 	/**
 	 * static Singleton instance.

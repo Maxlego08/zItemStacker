@@ -355,16 +355,6 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 		}
 
 		persist.save(this, "items");
-
-		File file = new File(plugin.getDataFolder(), "whitelist.yml");
-		if (!file.exists()) {
-			try {
-				createDefaultFile(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return;
-		}
 	}
 
 	@Override
