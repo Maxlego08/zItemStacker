@@ -13,11 +13,30 @@
 # 
 # If you activate the item blacklist, then only these items can't be stackable
 # 
+#   You can find the list of blacklisted items here. Here are the different types of blacklist:
+#   - zitemstacker:similar_model_id
+#   - zitemstacker:names_contains
+#   - zitemstacker:zitemstacker:contains_lore
+#   - zitemstacker:material_similar
+#
 #########################################################################################################################################
 
 enableBlacklist: false
-blacklist:
-  exampleA:
-    material: BEDROCK
-  exampleB:
-    material: DIAMOND
+blacklists:
+
+    # Blacklist items if their name contains an element
+  - type: "zitemstacker:names_contains"
+    key: "Custom Sword"
+      
+    # Blacklist of items with a custom model id
+  - type: "zitemstacker:similar_model_id"
+    key: PAPER # Material name (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html)
+    modelId: 10001    
+    
+    # Blacklist of items with lore contains key
+  - type: "zitemstacker:contains_lore"
+    key: "Cosmetics"    
+    
+    # Blacklist of items with lore contains key
+  - type: "zitemstacker:material_similar"
+    key: BEDROCK # (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html)

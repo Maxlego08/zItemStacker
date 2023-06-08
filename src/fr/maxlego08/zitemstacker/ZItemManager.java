@@ -1,7 +1,6 @@
 package fr.maxlego08.zitemstacker;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,12 +9,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -36,12 +33,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.maxlego08.zitemstacker.api.ItemManager;
 import fr.maxlego08.zitemstacker.api.enums.XSound;
+import fr.maxlego08.zitemstacker.api.materials.ItemStackComparator;
 import fr.maxlego08.zitemstacker.listener.ListenerAdapter;
+import fr.maxlego08.zitemstacker.material.LoreComparator;
+import fr.maxlego08.zitemstacker.material.MaterialComparator;
+import fr.maxlego08.zitemstacker.material.ModelIdComparator;
+import fr.maxlego08.zitemstacker.material.NameComparator;
 import fr.maxlego08.zitemstacker.save.Config;
 import fr.maxlego08.zitemstacker.zcore.logger.Logger;
 import fr.maxlego08.zitemstacker.zcore.logger.Logger.LogType;
-import fr.maxlego08.zitemstacker.zcore.utils.loader.ItemStackLoader;
-import fr.maxlego08.zitemstacker.zcore.utils.loader.Loader;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Persist;
 import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 
@@ -49,8 +49,8 @@ import fr.maxlego08.zitemstacker.zcore.utils.storage.Saveable;
 public class ZItemManager extends ListenerAdapter implements Saveable, ItemManager {
 
 	private static Map<UUID, ZItem> items = new HashMap<UUID, ZItem>();
-	private transient List<ItemStack> whitelistItems = new ArrayList<ItemStack>();
-	private transient List<ItemStack> blacklistItems = new ArrayList<ItemStack>();
+	private transient List<ItemStackComparator> whitelistItems = new ArrayList<ItemStackComparator>();
+	private transient List<ItemStackComparator> blacklistItems = new ArrayList<ItemStackComparator>();
 	private transient boolean enableWhitelist = false;
 	private transient boolean enableBlacklist = false;
 
@@ -306,8 +306,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 	 * @return true if item is whitelist
 	 */
 	private boolean isWhitelist(ItemStack itemStack) {
-		return itemStack != null
-				&& this.whitelistItems.stream().filter(item -> item.isSimilar(itemStack)).findFirst().isPresent();
+		return itemStack != null && this.whitelistItems.stream().anyMatch(i -> i.isSimilar(itemStack));
 	}
 
 	private boolean isEnable() {
@@ -324,8 +323,7 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 	 * @return true if item is whitelist
 	 */
 	private boolean isBlacklist(ItemStack itemStack) {
-		return itemStack != null
-				&& this.blacklistItems.stream().filter(item -> item.isSimilar(itemStack)).findFirst().isPresent();
+		return itemStack != null && this.blacklistItems.stream().anyMatch(i -> i.isSimilar(itemStack));
 	}
 
 	/**
@@ -379,117 +377,102 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public void loadConfiguration() {
-		File file = new File(plugin.getDataFolder(), "whitelist.yml");
+
+		this.whitelistItems.clear();
+
+		File file = new File(this.plugin.getDataFolder(), "whitelist.yml");
 		if (!file.exists()) {
-			try {
-				createDefaultFile(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			this.plugin.saveResource("whitelist.yml", false);
+			file = new File(this.plugin.getDataFolder(), "whitelist.yml");
 		}
-		YamlConfiguration configuration = getConfig(file);
-		enableWhitelist = configuration.getBoolean("enableWhitelist", false);
-		ConfigurationSection configurationSection = configuration.getConfigurationSection("whitelist.");
-		Loader<ItemStack> loader = new ItemStackLoader();
 
-		this.whitelistItems = new ArrayList<>();
+		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+		this.enableWhitelist = configuration.getBoolean("enableWhitelist", false);
+		List<Map<String, Object>> values = (List<Map<String, Object>>) configuration.getList("whitelist");
 
-		for (String key : configurationSection.getKeys(false)) {
-
-			String path = "whitelist." + key + ".";
-
-			ItemStack itemStack = loader.load(configuration, path);
-			if (itemStack == null) {
-				Logger.info("Error with item " + path + " in whitelist items !", LogType.ERROR);
-				continue;
-			}
-			this.whitelistItems.add(itemStack);
-
+		if (values != null) {
+			values.forEach(map -> {
+				ItemStackComparator comparator = getComparator(map);
+				if (comparator != null) {
+					this.whitelistItems.add(comparator);
+				}
+			});
 		}
-	}
 
-	/**
-	 * 
-	 * @param file
-	 * @throws IOException
-	 */
-	private void createDefaultFile(File file) throws IOException {
-
-		file.createNewFile();
-		YamlConfiguration configuration = getConfig(file);
-		configuration.set("enableWhitelist", this.enableWhitelist);
-
-		List<ItemStack> itemStacks = new ArrayList<>();
-		itemStacks.add(new ItemStack(Material.MELON));
-		itemStacks.add(new ItemStack(Material.CACTUS));
-
-		Loader<ItemStack> loader = new ItemStackLoader();
-		AtomicInteger atomicInteger = new AtomicInteger(1);
-		itemStacks.forEach(itemStack -> {
-			loader.save(itemStack, configuration, "whitelist." + atomicInteger.getAndIncrement() + ".");
-		});
-
-		configuration.save(file);
-
+		Logger.info("Loaded " + this.whitelistItems.size() + " whitelist items", LogType.INFO);
 	}
 
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public void loadBlackConfiguration() {
-		File file = new File(plugin.getDataFolder(), "blacklist.yml");
+
+		this.blacklistItems.clear();
+
+		File file = new File(this.plugin.getDataFolder(), "blacklist.yml");
 		if (!file.exists()) {
-			try {
-				createDefaultBlackFile(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			this.plugin.saveResource("blacklist.yml", false);
+			file = new File(this.plugin.getDataFolder(), "blacklist.yml");
 		}
-		YamlConfiguration configuration = getConfig(file);
-		enableBlacklist = configuration.getBoolean("enableBlacklist", false);
-		ConfigurationSection configurationSection = configuration.getConfigurationSection("blacklist.");
-		Loader<ItemStack> loader = new ItemStackLoader();
 
-		this.blacklistItems = new ArrayList<>();
+		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+		this.enableBlacklist = configuration.getBoolean("enableBlacklist", false);
+		List<Map<String, Object>> values = (List<Map<String, Object>>) configuration.getList("blacklists");
 
-		for (String key : configurationSection.getKeys(false)) {
-
-			String path = "blacklist." + key + ".";
-
-			ItemStack itemStack = loader.load(configuration, path);
-			if (itemStack == null) {
-				Logger.info("Error with item " + path + " in blacklist items !", LogType.ERROR);
-				continue;
-			}
-			this.blacklistItems.add(itemStack);
-
+		if (values != null) {
+			values.forEach(map -> {
+				ItemStackComparator comparator = getComparator(map);
+				if (comparator != null) {
+					this.blacklistItems.add(comparator);
+				}
+			});
 		}
+
+		Logger.info("Loaded " + this.blacklistItems.size() + " blacklist items", LogType.INFO);
 	}
 
-	/**
-	 * 
-	 * @param file
-	 * @throws IOException
-	 */
-	private void createDefaultBlackFile(File file) throws IOException {
+	private ItemStackComparator getComparator(Map<String, Object> map) {
 
-		file.createNewFile();
-		YamlConfiguration configuration = getConfig(file);
-		configuration.set("enableBlacklist", enableWhitelist);
+		String type = (String) map.get("type");
+		switch (type) {
+		case "zitemstacker:material_similar":
+			try {
+				Material material = Material.valueOf(((String) map.get("key")).toUpperCase());
+				return new MaterialComparator(material);
+			} catch (Exception e) {
+				Logger.info("Material was not found for zitemstacker:material_similar", LogType.ERROR);
+			}
+			break;
+		case "zitemstacker:contains_lore":
+			try {
+				return new LoreComparator((String) map.get("key"));
+			} catch (Exception e) {
+				Logger.info("Lore was not found for zitemstacker:contains_lore", LogType.ERROR);
+			}
+			break;
+		case "zitemstacker:similar_model_id":
+			try {
+				return new ModelIdComparator((String) map.get("key"), (int) map.get("modelId"));
+			} catch (Exception e) {
+				Logger.info("Material or ModelId was not found for zitemstacker:similar_model_id", LogType.ERROR);
+			}
+			break;
+		case "zitemstacker:names_contains":
+			try {
+				return new NameComparator((String) map.get("key"));
+			} catch (Exception e) {
+				Logger.info("Name was not found for zitemstacker:names_contains", LogType.ERROR);
+			}
+			break;
 
-		List<ItemStack> itemStacks = new ArrayList<>();
-		itemStacks.add(new ItemStack(Material.BEDROCK));
-		itemStacks.add(new ItemStack(Material.DIAMOND));
-
-		Loader<ItemStack> loader = new ItemStackLoader();
-		AtomicInteger atomicInteger = new AtomicInteger(1);
-		itemStacks.forEach(itemStack -> {
-			loader.save(itemStack, configuration, "blacklist." + atomicInteger.getAndIncrement() + ".");
-		});
-
-		configuration.save(file);
-
+		default:
+			Logger.info(type + " type was not found !", LogType.ERROR);
+			break;
+		}
+		return null;
 	}
 
 	@Override
