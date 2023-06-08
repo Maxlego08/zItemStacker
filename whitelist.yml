@@ -13,11 +13,30 @@
 # 
 # If you activate the item whitelist, then only these items can be stackable
 # 
+#   You can find the list of whitelisted items here. Here are the different types of whistelist:
+#   - zitemstacker:similar_model_id
+#   - zitemstacker:names_contains
+#   - zitemstacker:zitemstacker:contains_lore
+#   - zitemstacker:material_similar
+#
 #########################################################################################################################################
 
 enableWhitelist: false
 whitelist:
-  exampleA:
-    material: MELON
-  exampleB:
-    material: CACTUS
+
+    # Blacklist items if their name contains an element
+  - type: "zitemstacker:names_contains"
+    key: "Custom Sword"
+      
+    # Blacklist of items with a custom model id
+  - type: "zitemstacker:similar_model_id"
+    key: PAPER # Material name (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html)
+    modelId: 10001    
+    
+    # Blacklist of items with lore contains key
+  - type: "zitemstacker:contains_lore"
+    key: "Cosmetics"    
+    
+    # Blacklist of items with lore contains key
+  - type: "zitemstacker:material_similar"
+    key: CACTUS # (https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html)
