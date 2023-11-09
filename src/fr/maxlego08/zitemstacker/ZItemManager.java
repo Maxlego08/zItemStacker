@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
@@ -120,6 +121,26 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 			}
 
 			ZItem item = optional.get();
+						
+			if (entity instanceof Villager) {
+			
+				
+				Villager villager = (Villager) entity;
+				Inventory inventory = villager.getInventory();			
+			
+				if (!item.give(inventory)) {
+					target.remove();
+					item.remove();
+					return;
+				}
+				
+				if (item.getAmount() <= 0){
+					item.remove();
+				}
+				
+				return;
+			}
+			
 			EntityEquipment entityEquipment = entity.getEquipment();
 
 			EquipmentSlot slot = this.getEquipmentSlot(entityEquipment, target.getItemStack().clone());
@@ -144,9 +165,6 @@ public class ZItemManager extends ListenerAdapter implements Saveable, ItemManag
 
 				return;
 			}
-
-			// System.out.println(slot);
-			// System.out.println(event.getRemaining());
 		}
 
 	}

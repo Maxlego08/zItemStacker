@@ -144,6 +144,11 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 	public void setItemName() {
 		if (this.getItem() != null) {
 
+			if (this.amount <= 0){
+				remove();
+				return;
+			}
+			
 			if (this.amount == 1 && Config.disableItemNameIfItsOne) {
 				this.getItem().setCustomNameVisible(Config.customNameVisible);
 			} else {
