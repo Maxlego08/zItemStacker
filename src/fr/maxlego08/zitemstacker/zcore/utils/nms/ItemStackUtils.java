@@ -1,12 +1,16 @@
 package fr.maxlego08.zitemstacker.zcore.utils.nms;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +19,7 @@ import fr.maxlego08.zitemstacker.zcore.utils.Base64;
 
 public class ItemStackUtils {
 
-	private static final double NMS_VERSION = NMSUtils.getNMSVersion();
+	private static final NmsVersion NMS_VERSION = NmsVersion.nmsVersion;
 	private static volatile Map<ItemStack, String> itemstackSerialized = new HashMap<ItemStack, String>();
 
 	/**
@@ -85,14 +89,24 @@ public class ItemStackUtils {
 		ItemStack localItemStack = null;
 		Object localObject2 = null;
 		try {
-			localObject1 = EnumReflectionItemStack.NBTCOMPRESSEDSTREAMTOOLS.getClassz()
-					.getMethod("a", new Class[] { InputStream.class })
-					.invoke(null, new Object[] { localByteArrayInputStream });
 
-			if (NMS_VERSION == 1.11D || NMS_VERSION == 1.12D) {
+			if (NmsVersion.nmsVersion == NmsVersion.V_1_20_4) {
+				
+				DataInputStream datainputstream = new DataInputStream(
+						new BufferedInputStream(new GZIPInputStream(localByteArrayInputStream)));
+				localObject1 = EnumReflectionItemStack.NBTCOMPRESSEDSTREAMTOOLS.getClassz()
+						.getMethod("a", new Class[] { DataInput.class }).invoke(null, new Object[] { datainputstream });				
+			} else {
+				
+				localObject1 = EnumReflectionItemStack.NBTCOMPRESSEDSTREAMTOOLS.getClassz()
+						.getMethod("a", new Class[] { InputStream.class })
+						.invoke(null, new Object[] { localByteArrayInputStream });
+			}
+
+			if (NMS_VERSION == NmsVersion.V_1_11 || NMS_VERSION == NmsVersion.V_1_12) {
 				Constructor<?> localConstructor = localClass2.getConstructor(new Class[] { localClass1 });
 				localObject2 = localConstructor.newInstance(new Object[] { localObject1 });
-			} else if (NMSUtils.isNewVersion()) {
+			} else if (!NMS_VERSION.isItemLegacy()) {
 				localObject2 = localClass2.getMethod("a", new Class[] { localClass1 }).invoke(null,
 						new Object[] { localObject1 });
 			} else {
@@ -109,23 +123,6 @@ public class ItemStackUtils {
 		return localItemStack;
 
 	}
-
-	/*
-	 * public static boolean isUnbreakable(ItemStack itemStack) { try {
-	 * 
-	 * Class<?> localClass = EnumReflectionItemStack.NBTTAGCOMPOUND.getClassz();
-	 * Object localObject2 = EnumReflectionItemStack.CRAFTITEMSTACK.getClassz()
-	 * .getMethod("asNMSCopy", new Class[] { ItemStack.class }).invoke(null, new
-	 * Object[] { itemStack });
-	 * 
-	 * Object nbttag = EnumReflectionItemStack.ITEMSTACK.getClassz()
-	 * .getMethod("getTag", new Class[] { localClass }) .invoke(localObject2,
-	 * new Object[] { localObject2 });
-	 * 
-	 * } catch (IllegalAccessException | IllegalArgumentException |
-	 * InvocationTargetException | NoSuchMethodException | SecurityException e)
-	 * { e.printStackTrace(); return false; } }
-	 */
 
 	public enum EnumReflectionItemStack {
 
