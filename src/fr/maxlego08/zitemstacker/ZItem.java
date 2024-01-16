@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import fr.maxlego08.zitemstacker.save.Config;
-import fr.maxlego08.zitemstacker.zcore.utils.ZUtils;
+import fr.maxlego08.zitemstacker.zcorea.utils.ZUtils;
 
 public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item {
 
@@ -120,7 +120,7 @@ public class ZItem extends ZUtils implements fr.maxlego08.zitemstacker.api.Item 
 				inventory.addItem(newItemStack);
 
 			}
-			// Si l'item est le même
+			// Si l'item est le mÃªme
 			else if (itemStack.isSimilar(currentItem) && currentItem.getAmount() < currentItem.getMaxStackSize()) {
 
 				int freeAmount = currentItem.getMaxStackSize() - currentItem.getAmount();
