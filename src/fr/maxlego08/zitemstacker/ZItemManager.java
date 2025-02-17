@@ -52,6 +52,8 @@ public class ZItemManager extends ZUtils implements ItemManager {
     public void onMerge(ItemMergeEvent event) {
 
         var entity = event.getEntity();
+        if (Config.disableWorlds.contains(entity.getWorld().getName())) return;
+
         var target = event.getTarget();
 
         StackedItem currentItem = getItem(entity);
@@ -70,6 +72,8 @@ public class ZItemManager extends ZUtils implements ItemManager {
     public void onSpawn(ItemSpawnEvent event) {
 
         var entity = event.getEntity();
+        if (Config.disableWorlds.contains(entity.getWorld().getName())) return;
+
         ItemStack itemStack = entity.getItemStack();
 
         Optional<StackedItem> optional = getNearbyItems(entity.getLocation(), itemStack);
@@ -93,6 +97,8 @@ public class ZItemManager extends ZUtils implements ItemManager {
     public void onPickUp(EntityPickupItemEvent event) {
 
         var item = event.getItem();
+        if (Config.disableWorlds.contains(item.getWorld().getName())) return;
+
         var entity = event.getEntity();
         var stackedItem = getItem(item);
 
@@ -163,6 +169,9 @@ public class ZItemManager extends ZUtils implements ItemManager {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDespawn(ItemDespawnEvent event) {
+
+        if (Config.disableWorlds.contains(event.getEntity().getWorld().getName())) return;
+
         if (Config.disableItemDespawn) {
             event.setCancelled(true);
         }
@@ -172,6 +181,8 @@ public class ZItemManager extends ZUtils implements ItemManager {
     public void onInventoryPickUp(InventoryPickupItemEvent event) {
 
         var target = event.getItem();
+        if (Config.disableWorlds.contains(target.getWorld().getName())) return;
+
         var inventory = event.getInventory();
 
         event.setCancelled(true);

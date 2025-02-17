@@ -2,6 +2,9 @@ package fr.maxlego08.zitemstacker.save;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Config {
 
     public static boolean enableDebug = true;
@@ -12,6 +15,7 @@ public class Config {
     public static double distanceOnDrop = 5.0;
     public static boolean disableEntityPickUp = true;
     public static String language = "en-us";
+    public static List<String> disableWorlds = new ArrayList<>();
 
     /**
      * static Singleton instance.
@@ -49,6 +53,7 @@ public class Config {
         distanceOnDrop = configuration.getDouble("distance-on-drop", 5.0);
         disableEntityPickUp = configuration.getBoolean("disable-entity-pickup", true);
         language = configuration.getString("language", "en-us");
+        disableWorlds = configuration.getStringList("disable-worlds");
     }
 
 }

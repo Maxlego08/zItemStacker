@@ -9,7 +9,6 @@ import fr.maxlego08.zitemstacker.save.MessageLoader;
 import fr.maxlego08.zitemstacker.zcore.ZPlugin;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.Metrics;
 import fr.maxlego08.zitemstacker.zcore.utils.plugins.VersionChecker;
-import org.bukkit.NamespacedKey;
 
 /**
  * System to create your plugins very simple Projet:
@@ -30,7 +29,6 @@ public class ItemStackerPlugin extends ZPlugin {
 
         this.preEnable();
 
-        this.translationManager.loadTranslations();
         this.registerCommand("zitemstacker", new CommandItem(this));
 
         saveDefaultConfig();
@@ -45,6 +43,7 @@ public class ItemStackerPlugin extends ZPlugin {
         checker.checkVersion();
 
         this.addListener(this.itemManager);
+        this.translationManager.loadTranslations();
 
         this.postEnable();
     }
@@ -64,6 +63,7 @@ public class ItemStackerPlugin extends ZPlugin {
         reloadConfig();
         Config.getInstance();
         super.reloadFiles();
+        this.translationManager.loadTranslations();
     }
 
     public ItemManager getItemManager() {
