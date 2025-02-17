@@ -1,0 +1,19 @@
+# Enables detailed information display in the console.
+# If you encounter an issue, enable this option and send the errors to support.
+enable-debug: false
+
+# Enables execution time debugging to measure plugin performance.
+# Useful for identifying bottlenecks and optimizing performance.
+enable-debug-time: false
+
+item-name: "#1bfaefx%amount% #1bfa6d%name%"
+
+expire-item-seconds: 604800
+
+disable-item-despawn: false
+
+distance-on-drop: 5.0
+
+disable-entity-pickup: true
+
+language: en-us
