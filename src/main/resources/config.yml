@@ -6,14 +6,25 @@ enable-debug: false
 # Useful for identifying bottlenecks and optimizing performance.
 enable-debug-time: false
 
+# Format string for item names.
+# Available placeholders: %amount%, %name%, %id%, %data%
 item-name: "#1bfaefx%amount% #1bfa6d%name%"
 
+# Number of seconds before an item is automatically removed (0 disables).
 expire-item-seconds: 604800
 
+# Whether items despawning from the world should be disabled.
 disable-item-despawn: false
 
+# Distance to drop an item when the player's inventory is full.
 distance-on-drop: 5.0
 
+# Whether players should be able to pick up entities (entities will be dropped as items).
 disable-entity-pickup: true
 
+# Language for the plugin (see the 'lang' folder for supported languages).
 language: en-us
+
+# List of world names to disable.
+disable-worlds:
+  - "world_the_end"
